@@ -9,6 +9,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
   :root{
     --ink:#0b1f17; --forest:#12352a; --forest2:#1c4a3a; --cream:#f4efe3; --cream2:#e8e0cd;
@@ -195,6 +197,8 @@
     <button data-tab="comp" class="active">Comparateur</button>
     <button data-tab="fiches">Fiches par club</button>
     <button data-tab="stats">Statistiques</button>
+    <button data-tab="info">Information</button>
+    <button data-tab="carte">Carte</button>
   </nav>
   <!-- ============ COMPARATEUR ============ -->
   <section class="panel active" id="comp">
@@ -326,8 +330,25 @@
       <b>Lecture rapide pour ton profil (marché · FDS · fin d'après-midi).</b> Les meilleurs rapports sont les clubs avec un vrai tarif <b>twilight après 16h</b> : Arundel, Bel-Air, St-Janvier, St-Jérôme, Le Grand Duc. À l'inverse, <b>Royal Laurentien</b> impose la voiturette le week-end (et fériés) avant 15h, et <b>Mont-Gabriel</b> + <b>Tremblant</b> incluent (donc imposent) la voiturette en tout temps — impossibles à marcher.
     </div>
   </section>
+  <!-- ============ INFORMATION ============ -->
+  <section class="panel" id="info">
+    <div class="controls">
+      <div class="filters few">
+        <div class="ctrl">
+          <label>Choisir un club</label>
+          <select id="selClubI"></select>
+        </div>
+      </div>
+    </div>
+    <div id="infoCard"></div>
+  </section>
+  <!-- ============ CARTE ============ -->
+  <section class="panel" id="carte">
+    <div id="map" style="height:540px;border-radius:16px;overflow:hidden;border:1px solid var(--line);margin-top:8px"></div>
+    <div class="legend"><span>📍 Un point par club · clique un marqueur pour le tarif et le lien de réservation. Quelques positions sont approximatives (centre du secteur).</span></div>
+  </section>
   <footer>
-    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Construit pour Simon · Just Simple Web. <b>v8 · 5 juin 2026</b></div>
+    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Construit pour Simon · Just Simple Web. <b>v9 · 5 juin 2026</b></div>
   </footer>
 </div>
 <script>
@@ -526,6 +547,37 @@ const CLUBS = [
   fds:[{s:0,l:"Jour",w:76,c:25},{s:12.5,l:"12h30–15h",w:64,c:25},{s:15,l:"Après 15h",w:50,c:25}],
   badges:[], note:"27 trous. Taxes INCLUSES (grille officielle 2026, vérifiée le 5 juin 2026). Vendredi a son propre tarif. Voiturette 25 $/pers (18t). Chariot à main 12 $."}
 ];
+// ----- métadonnées par club (lien réservation, téléphone, coordonnées) -----
+// Mappé par c.base. Vérifié sur sites officiels le 5 juin 2026 (URLs testées 200 OK).
+// geoApprox:true = coordonnées dérivées de l'adresse/ville, à affiner si besoin.
+const CLUB_META={
+ "Club de golf Bel-Air":{tel:"450 258-4444",url:"https://www.golfbelair.com/tarifs/",lat:45.6134,lng:-74.0652},
+ "Golf Sainte-Agathe":{tel:"819 326-3022",url:"https://www.golfsainteagathe.com/fr/rates",lat:45.9897,lng:-74.0667},
+ "Club de golf St-Janvier":{tel:"450 435-9631",url:"https://www.golfstjanvier.com/tarifs/",lat:45.7248,lng:-73.8784},
+ "Club de golf St-Jérôme":{tel:"450 436-2335",url:"https://golfstjerome.com/tarifs/",lat:45.8313,lng:-74.0617},
+ "Club de golf Mirabel":{tel:"450 435-7006",url:"https://www.golfmirabel.com/",lat:45.7162,lng:-73.9015},
+ "Club de golf Le Diamant":{tel:"450 476-1922",url:"https://www.golflediamant.com/index.php?lang=fr",lat:45.6537,lng:-73.9965},
+ "Golf 4D":{tel:"450 434-0048",url:"https://www.golf4d.ca/r%C3%A9servation",lat:45.6744,lng:-73.9150},
+ "Golf Le Sélect":{tel:"450 566-0370",url:"https://golfleselect.com/tarifs-promotions-2/",lat:45.6711,lng:-74.2305},
+ "Club de golf Glendale":{tel:"514 990-8392",url:"https://www.golf-glendale.com/fr/page/tarifs_visiteurs.html",lat:45.6446,lng:-73.9476},
+ "Golf Le Grand Duc":{tel:"450 569-1818",url:"https://www.golflegrandduc.com/tarifs/",lat:45.8377,lng:-73.8929},
+ "Club de Golf Lorraine":{tel:"450 621-1740",url:"https://lorrainegolf.com/rates/",lat:45.6604,lng:-73.7809},
+ "Centre de Golf Le Versant":{tel:"450 964-2251",url:"https://golfleversant.com/en/rates/",lat:45.6878,lng:-73.7065},
+ "Golf Champêtre":{tel:"450 478-1112",url:"https://golfchampetre.com/tarifs-membre/",lat:45.7967,lng:-73.8562},
+ "Club de golf Lachute":{tel:"450 562-5228",url:"https://www.cglachute.ca/",lat:45.6465,lng:-74.3280},
+ "Golf Ste-Rose":{tel:"450 628-6072",url:"https://golfsterose.com/",lat:45.5969,lng:-73.8202},
+ "Club de golf Piedmont":{tel:"450 227-4653",url:"https://golfpiedmont.ca/pages/tarification",lat:45.9114,lng:-74.1336},
+ "Golf La Vallée de Sainte-Adèle":{tel:"450 229-4653",url:"https://www.golflavallee.com/reservez/",lat:45.9489,lng:-74.1190},
+ "Golf Le Chantecler":{tel:"450 476-1339",url:"https://www.golflechantecler.com/le-club/tarifs-journaliers/",lat:45.9612,lng:-74.1681},
+ "Club de Golf Val-Morin":{tel:"819 322-1501",url:"https://golfvalmorin.com/",lat:46.0000,lng:-74.1676},
+ "Club de golf Mont-Gabriel":{tel:"450 229-3547",url:"https://www.montgabriel.com/Activites/golf",lat:45.9191,lng:-74.1593,geoApprox:true},
+ "Golf Royal Laurentien":{tel:"819 326-5454",url:"https://golfroyallaurentien.com/tarifs/",lat:46.1175,lng:-74.4760},
+ "Club de golf St-Donat":{tel:"819 424-2658",url:"https://golfstdonat.com/fr/tarifs/",lat:46.3170,lng:-74.2240,geoApprox:true},
+ "Golf Arundel":{tel:"819 687-8383",url:"https://golfarundel.com/fr/reservation-2-2-2/",lat:45.9620,lng:-74.6100,geoApprox:true},
+ "Golf Le Griffon des Sources":{tel:"450 562-2688",url:"https://www.golfgriffon.com/fr/tarifs",lat:45.7260,lng:-74.1100,geoApprox:true},
+ "Club de Golf Tremblant":{tel:"866 783-5634",url:"https://www.tremblant.ca/fr-CA/quoi-faire/golf/reservations",lat:46.1970,lng:-74.5950,geoApprox:true},
+ "Club de Golf Terrebonne":{tel:"450 477-1817",url:"https://www.golfterrebonne.ca/index.php?option=com_ggpublic&req=teetimes&lang=fr",lat:45.7380,lng:-73.7000,geoApprox:true}
+};
 // ----- region + cart policy + verification -----
 const REGION_BY_TOWN={
  "Mirabel":"Basses-Laurentides","St-Jérôme":"Basses-Laurentides","Sainte-Sophie":"Basses-Laurentides",
@@ -542,6 +594,12 @@ CLUBS.forEach(c=>{
   else if(c.cartIncl) c.cartPol="incl";
   else c.cartPol="pied";
   c.vf = c.vf || (c.dataNd?'nd':(c.dynamic?'dyn':'ok'));
+  const meta = CLUB_META[c.base] || {};
+  c.tel = meta.tel || "";
+  c.url = meta.url || "";
+  c.lat = (meta.lat ?? null);
+  c.lng = (meta.lng ?? null);
+  c.geoApprox = !!meta.geoApprox;
 });
 // ----- helpers -----
 function vfPill(c){
@@ -633,6 +691,7 @@ const TODAY = new Date().toISOString().slice(0,10);
 const ST={time:16,sort:"walk",q:"",region:"all",cart:"all",date:TODAY};
 const STF={q:"",club:"all"};
 const STS={time:16,date:TODAY};
+const STI={club:""};
 const timeLabels={8:"matin",11:"à partir de 11h",13:"à partir de 13h",14:"à partir de 14h",15:"à partir de 15h",16:"à partir de 16h",17.5:"soirée"};
 // ====== COMPARATEUR ======
 function renderComp(){
@@ -802,6 +861,71 @@ function renderStats(){
     bars.appendChild(row);
   }
 }
+// ====== INFORMATION ======
+// montant voiturette (supplément/pers) lu sur le 1er créneau semaine haute saison
+function cartAddOf(club){
+  const rs=rawDay(club,'sem','hi');
+  if(rs&&rs.length&&rs[0].c!=null) return rs[0].c;
+  return null;
+}
+function renderInfo(){
+  const box=document.getElementById('infoCard'); if(!box)return;
+  const c=CLUBS.find(x=>x.base===STI.club) || CLUBS[0];
+  if(!c){box.innerHTML="";return;}
+  // saisons
+  const secs=seasonSections(c).map(s=>
+    `<div class="dayline"><span class="dl-d"><span class="s-pill ${s.cls}">${s.title}</span></span><span class="dl-ref">${s.sub}</span></div>`
+  ).join("");
+  // voiturette
+  const cartAdd=cartAddOf(c);
+  let cartLine;
+  if(c.cartPol==='incl') cartLine=`<span class="badge b-incl">Incluse</span> dans le tarif`;
+  else if(c.cartPol==='oblig') cartLine=`<span class="badge b-oblig">Obligatoire</span> (incluse au prix)`;
+  else cartLine=`<span class="badge b-info">Optionnelle</span>${cartAdd!=null?` · +${fmt(cartAdd)}/pers`:''}`;
+  // taxes
+  const taxLine=c.tax?`<span class="badge b-incl">Taxes incluses</span>`:`<span class="badge b-info">Taxes en sus</span>`;
+  // liens
+  const resBtn=c.url?`<a class="badge b-warn" href="${c.url}" target="_blank" rel="noopener" style="text-decoration:none">Réserver / tarifs →</a>`:'';
+  const telBtn=c.tel?`<a class="badge b-info" href="tel:${c.tel.replace(/\s/g,'')}" style="text-decoration:none">☎ ${c.tel}</a>`:'';
+  const approx=c.geoApprox?`<span class="tax-note">Position sur la carte approximative.</span>`:'';
+  box.innerHTML=`
+    <div class="card" style="max-width:560px">
+      <h3>${vfPill(c)}${c.base}</h3>
+      <div class="meta">${c.t} · ${c.region}</div>
+      <div class="grid-block"><div class="gh">Saisons</div>${secs}</div>
+      <div class="grid-block"><div class="gh">Voiturette</div><div class="dayline"><span class="dl-d">${cartLine}</span></div></div>
+      <div class="grid-block"><div class="gh">Taxes</div><div class="dayline"><span class="dl-d">${taxLine}</span></div></div>
+      <div class="grid-block"><div class="gh">Réserver</div><div class="badges" style="margin-top:8px;gap:8px">${resBtn}${telBtn}${(!resBtn&&!telBtn)?'<span class="nd-txt">Aucun lien disponible</span>':''}</div></div>
+      <div class="foot">${c.note}${approx?'<br>'+approx:''}</div>
+    </div>`;
+}
+// ====== CARTE ======
+let MAP=null;
+function initMap(){
+  if(MAP) return;
+  if(typeof L==='undefined'){
+    document.getElementById('map').innerHTML='<div style="padding:24px;color:#9fb3a6">La carte n\'a pas pu se charger (librairie hors ligne). Réessaie avec une connexion.</div>';
+    return;
+  }
+  MAP=L.map('map',{scrollWheelZoom:false}).setView([45.95,-74.10],8);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(MAP);
+  const day=dayType(TODAY);
+  const seen=new Set();
+  for(const c of CLUBS){
+    if(seen.has(c.base))continue; seen.add(c.base);
+    if(c.lat==null||c.lng==null)continue;
+    const slot=slotFor(c,day,16,TODAY);
+    const w=priceWalk(c,slot,false);
+    const ct=priceCart(c,slot,false);
+    const priceLine = c.cartPol!=='pied'
+      ? `Dès ${ct!=null?fmt(ct):(w!=null?fmt(w):'—')} (voit. incl.)`
+      : `Dès ${w!=null?fmt(w):'—'} (marcheur)`;
+    const link=c.url?`<br><a href="${c.url}" target="_blank" rel="noopener">Réserver / tarifs →</a>`:'';
+    L.marker([c.lat,c.lng]).addTo(MAP)
+      .bindPopup(`<b>${c.base}</b><br><span style="color:#555">${c.t}</span><br>${priceLine}${link}`);
+  }
+}
+function showMap(){ initMap(); setTimeout(()=>{ if(MAP) MAP.invalidateSize(); },60); }
 // ====== wiring ======
 function seg(id,dataKey,prop,store,cb){
   const el=document.getElementById(id); if(!el)return;
@@ -822,6 +946,8 @@ document.getElementById('selDateS').value=TODAY;
 // peuple le dropdown de clubs (fiches)
 const BASES=[...new Set(CLUBS.map(c=>c.base))].sort((a,b)=>a.localeCompare(b,'fr'));
 document.getElementById('selClubF').innerHTML='<option value="all">Tous les clubs</option>'+BASES.map(b=>`<option value="${b}">${b}</option>`).join('');
+document.getElementById('selClubI').innerHTML=BASES.map(b=>`<option value="${b}">${b}</option>`).join('');
+STI.club=BASES[0];
 seg('segSort','sort','sort',ST,renderComp);
 document.getElementById('selDate').addEventListener('change',e=>{ST.date=e.target.value||TODAY;renderComp();});
 document.getElementById('selTime').addEventListener('change',e=>{ST.time=parseFloat(e.target.value);renderComp();});
@@ -843,6 +969,7 @@ document.querySelectorAll('thead th[data-col]').forEach(th=>{
     document.querySelectorAll('#segSort button').forEach(b=>b.classList.toggle('on',b.dataset.sort===col)); renderComp();}});
 });
 document.getElementById('selClubF').addEventListener('change',e=>{STF.club=e.target.value;renderFiches();});
+document.getElementById('selClubI').addEventListener('change',e=>{STI.club=e.target.value;renderInfo();});
 document.getElementById('searchF').addEventListener('input',e=>{STF.q=e.target.value;renderFiches();});
 document.getElementById('selDateS').addEventListener('change',e=>{STS.date=e.target.value||TODAY;renderStats();});
 document.getElementById('selTimeS').addEventListener('change',e=>{STS.time=parseFloat(e.target.value);renderStats();});
@@ -854,6 +981,8 @@ document.querySelectorAll('nav.tabs button').forEach(b=>{
     document.getElementById(b.dataset.tab).classList.add('active');
     if(b.dataset.tab==='fiches')renderFiches();
     if(b.dataset.tab==='stats')renderStats();
+    if(b.dataset.tab==='info')renderInfo();
+    if(b.dataset.tab==='carte')showMap();
   });
 });
 renderComp();

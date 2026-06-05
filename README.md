@@ -17,6 +17,11 @@ saison (haute, basse…), avec ou sans voiturette.
 - **Fiches par club** — la grille tarifaire complète de chaque club (toutes les
   plages horaires, semaine et fin de semaine, par saison).
 - **Statistiques** — moyennes, min/max et classement des tarifs pour la date choisie.
+- **Information** — choisis un club et vois ses saisons (haute/basse), la politique et le
+  prix de la voiturette, le statut des taxes, un bouton vers la page de réservation/tarifs
+  du club, et son téléphone.
+- **Carte** — tous les clubs sur une carte interactive (Leaflet + OpenStreetMap) ; clique
+  un marqueur pour le tarif et le lien de réservation.
 
 Les prix sont saisis manuellement à partir des sites officiels des clubs.
 Chaque tarif porte une mention de vérification (✓ vérifié · ~ dynamique · n.d.).
@@ -28,15 +33,20 @@ dans [`index.html`](index.html). Aucun serveur, aucune base de données, aucune
 dépendance à installer. Il suffit d'ouvrir le fichier dans un navigateur.
 
 - Les données des clubs vivent dans la constante `CLUBS` (dans la balise `<script>`).
+- Les liens de réservation, téléphones et coordonnées GPS (pour la carte) vivent dans
+  la constante `CLUB_META`, juste après `CLUBS`, indexée par le nom du club.
 - `TAXF` = facteur de taxes (TPS+TVQ) appliqué aux clubs dont les prix sont hors taxes.
 - La saison et le jour-type sont déduits automatiquement de la date choisie.
+- La carte utilise [Leaflet](https://leafletjs.com/) chargé depuis un CDN — pas de clé API.
 
 ## Mettre à jour les prix
 
 1. Ouvre `index.html` dans un éditeur.
 2. Trouve le club dans la liste `CLUBS` (cherche son nom).
 3. Modifie les valeurs `w` (prix marcheur) et `c` (supplément voiturette/pers.).
-4. Sauvegarde, puis `git commit` + `git push` — GitHub Pages se met à jour seul.
+4. Pour un lien de réservation, un téléphone ou une position de carte : modifie
+   l'entrée du club dans `CLUB_META`.
+5. Sauvegarde, puis `git commit` + `git push` — GitHub Pages se met à jour seul.
 
 ## Lancer en local
 

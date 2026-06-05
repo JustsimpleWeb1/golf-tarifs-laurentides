@@ -258,10 +258,10 @@
         <thead>
           <tr>
             <th data-col="name">Club <span class="arrow">↕</span></th>
-            <th data-col="season">Saison</th>
-            <th data-col="slot">Plage applicable</th>
             <th data-col="walk" class="num">Marcheur <span class="arrow">↕</span></th>
             <th data-col="cart" class="num">+ Voiturette <span class="arrow">↕</span></th>
+            <th data-col="season">Saison</th>
+            <th data-col="slot">Plage applicable</th>
             <th data-col="flags">Notes</th>
           </tr>
         </thead>
@@ -683,10 +683,10 @@ function renderComp(){
     else walkCell=`<span class="price-pill" style="background:${heat(r.w,wMin,wMax)}">${fmt(r.w)}</span>`;
     tr.innerHTML=`
       <td><div class="club-name">${isBest?'<span class="crown">♦</span>':''}${vfPill(r.c)}${r.c.n}</div><div class="town">${r.c.t} · ${r.c.region}</div></td>
-      <td><span class="s-pill ${r.g.cls}">${r.g.label}</span></td>
-      <td><span class="slotlbl">${r.slot?r.slot.l:'—'}</span></td>
       <td class="num">${walkCell}</td>
       <td class="num">${cartCell}</td>
+      <td><span class="s-pill ${r.g.cls}">${r.g.label}</span></td>
+      <td><span class="slotlbl">${r.slot?r.slot.l:'—'}</span></td>
       <td><div class="badges">${badges||'<span class="badge b-info">—</span>'}</div></td>`;
     tb.appendChild(tr);
   }

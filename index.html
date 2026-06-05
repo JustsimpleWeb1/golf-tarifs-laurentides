@@ -110,6 +110,7 @@
   .town{color:#8ea597;font-size:.82rem;font-weight:500;margin-top:1px}
   .slotlbl{color:#bcccc1;font-size:.82rem;font-weight:600}
   .price-pill{display:inline-block;padding:5px 11px;border-radius:8px;min-width:74px;text-align:right}
+  .price-pill small{font-size:.66em;font-weight:600;opacity:.7;margin-left:1px}
   .badges{display:flex;gap:5px;flex-wrap:wrap}
   .badge{font-size:.66rem;font-weight:700;letter-spacing:.03em;padding:3px 8px;border-radius:6px;white-space:nowrap;border:1px solid transparent}
   .b-incl{background:rgba(63,143,94,.18);color:#86d6a3;border-color:rgba(63,143,94,.4)}
@@ -346,7 +347,7 @@
     <div class="legend"><span>📍 Un point par club · clique un marqueur pour le tarif et le lien de réservation. Quelques positions sont approximatives (centre du secteur).</span></div>
   </section>
   <footer>
-    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous ; tarifs 9 trous marqués ~ sont à confirmer. Construit pour Simon · Just Simple Web. <b>v13 · 5 juin 2026</b></div>
+    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous ; tarifs 9 trous marqués ~ sont à confirmer. Construit pour Simon · Just Simple Web. <b>v14 · 5 juin 2026</b></div>
   </footer>
 </div>
 <script>
@@ -785,8 +786,9 @@ function renderComp(){
     const tr=document.createElement('tr'); if(isBest)tr.className="best-row";
     let badges = r.c.badges.map(b=>`<span class="badge ${b.c}">${b.x}</span>`).join("");
     let cartCell;
-    if(r.c.cartIncl) cartCell=`<span class="b-incl badge">incluse</span>`;
-    else if(r.c.cartNd) cartCell=`<span class="nd-txt">n.d.</span>`;
+    if(r.c.cartNd) cartCell=`<span class="nd-txt">n.d.</span>`;
+    else if(r.ct==null) cartCell=`<span class="nd-txt">—</span>`;
+    else if(r.c.cartIncl) cartCell=`<span class="price-pill" style="background:${heat(r.ct,cMin,cMax)}" title="Voiturette incluse dans ce prix">${fmt(r.ct)} <small>incl.</small></span>`;
     else cartCell=`<span class="price-pill" style="background:${heat(r.ct,cMin,cMax)}">${fmt(r.ct)}</span>`;
     let walkCell;
     if(r.w==null) walkCell=`<span class="b-oblig badge">voit. oblig.</span>`;

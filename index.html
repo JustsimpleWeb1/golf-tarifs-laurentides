@@ -120,6 +120,10 @@
   .legend .sw{display:inline-block;width:13px;height:13px;border-radius:3px;vertical-align:-2px;margin-right:6px}
   /* ---------- Fiches ---------- */
   .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;margin-top:8px}
+  /* onglet Club de golf : infos à gauche, tarifs à droite (empilé sur mobile) */
+  .info-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:18px;align-items:start;margin-top:8px}
+  .info-split .card{max-width:none;overflow:visible}
+  @media(max-width:820px){ .info-split{grid-template-columns:1fr} }
   .card{background:rgba(11,31,23,.55);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .18s,border-color .18s}
   .card:hover{transform:translateY(-3px);border-color:rgba(201,162,74,.35)}
   .card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--gold),transparent)}
@@ -195,9 +199,8 @@
 <div class="wrap">
   <nav class="tabs">
     <button data-tab="comp" class="active">Comparateur</button>
-    <button data-tab="fiches">Fiches par club</button>
+    <button data-tab="info">Club de golf</button>
     <button data-tab="stats">Statistiques</button>
-    <button data-tab="info">Information</button>
     <button data-tab="carte">Carte</button>
   </nav>
   <!-- ============ COMPARATEUR ============ -->
@@ -289,22 +292,6 @@
     </div>
     <div class="note-box" id="compNote"></div>
   </section>
-  <!-- ============ FICHES ============ -->
-  <section class="panel" id="fiches">
-    <div class="controls">
-      <div class="searchbar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input type="search" id="searchF" placeholder="Rechercher un club ou une ville…">
-      </div>
-      <div class="filters few">
-        <div class="ctrl">
-          <label>Choisir un club</label>
-          <select id="selClubF"></select>
-        </div>
-      </div>
-    </div>
-    <div class="cards" id="cards"></div>
-  </section>
   <!-- ============ STATS ============ -->
   <section class="panel" id="stats">
     <div class="controls">
@@ -355,7 +342,7 @@
     <div class="legend"><span>📍 Un point par club · clique un marqueur pour le tarif et le lien de réservation. Quelques positions sont approximatives (centre du secteur).</span></div>
   </section>
   <footer>
-    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous ; tarifs 9 trous marqués ~ sont à confirmer. Construit pour Simon · Just Simple Web. <b>v10 · 5 juin 2026</b></div>
+    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous ; tarifs 9 trous marqués ~ sont à confirmer. Construit pour Simon · Just Simple Web. <b>v11 · 5 juin 2026</b></div>
   </footer>
 </div>
 <script>
@@ -750,7 +737,6 @@ function mix(a,b,k){return a.map((v,i)=>Math.round(v+(b[i]-v)*k));}
 // ----- state -----
 const TODAY = new Date().toISOString().slice(0,10);
 const ST={time:16,sort:"walk",q:"",region:"all",cart:"all",date:TODAY,holes:18};
-const STF={q:"",club:"all"};
 const STS={time:16,date:TODAY};
 const STI={club:""};
 const timeLabels={8:"matin",11:"à partir de 11h",13:"à partir de 13h",14:"à partir de 14h",15:"à partir de 15h",16:"à partir de 16h",17.5:"soirée"};
@@ -840,56 +826,37 @@ function renderComp(){
     note.innerHTML=`<b>${frDate(ST.date)}, ${nine?'9 trous':'18 trous'}, tarif ${dayTypeLabel[day]}, ${timeLabels[ST.time]} :</b> le marcheur le plus abordable est <b>${cheapest.c.n}</b> à <b>${fmt(bestWalk)}</b>. ${nine?'Le tarif 9 trous est indépendant de la saison ; certains clubs ne l\'offrent qu\'en fin de journée. ~ = à confirmer.':(day==='fds'&&ST.time<15?'⚠️ Royal Laurentien et Mont-Gabriel imposent la voiturette à cette plage.':'')}`;
   } else note.innerHTML="";
 }
-// ====== FICHES ======
-function renderFiches(){
-  const box=document.getElementById('cards'); box.innerHTML="";
-  const q=STF.q.toLowerCase();
-  const clubSel=STF.club;
+// ====== CLUB DE GOLF (grille tarifaire) ======
+// Génère la grille de tarifs (18 trous, toutes saisons) d'un club — réutilisée par l'onglet Club de golf
+function tariffGridHTML(c){
+  if(c.dataNd) return `<div class="nd-txt" style="margin-top:8px">${c.note}</div>`;
   const dayDefs=[['sem','Lundi – jeudi'],['ven','Vendredi'],['fds','Fin de semaine + fériés']];
-  let count=0;
-  for(const c of CLUBS){
-    if(clubSel!=='all' && c.base!==clubSel) continue;
-    if(q && !(c.n+" "+c.t+" "+c.region).toLowerCase().includes(q)) continue;
-    count++;
-    const card=document.createElement('div'); card.className="card";
-    const badges=c.badges.map(b=>`<span class="badge ${b.c}">${b.x}</span>`).join("");
-    const taxLbl=c.tax?'taxes incluses':'taxes en sus';
-    let body="";
-    if(c.dataNd){
-      body=`<div class="nd-txt" style="margin-top:8px">${c.note}</div>`;
-    }else{
-      for(const sec of seasonSections(c)){
-        let blocks="";
-        for(const [dk,dl] of dayDefs){
-          const raw=rawDay(c,dk,sec.grille);
-          if(typeof raw==='string'){
-            const ref = raw==='sem'?'la semaine':(raw==='fds'?'la fin de semaine':raw);
-            blocks+=`<div class="dayline"><span class="dl-d">${dl}</span><span class="dl-ref">= ${ref}</span></div>`;
-            continue;
-          }
-          if(!Array.isArray(raw)||!raw.length) continue;
-          let rows="";
-          for(const s of raw){
-            const w=priceWalk(c,s,false);
-            const ct=priceCart(c,s,false);
-            const wTxt=(s.w==null)?'<small>voit. oblig.</small>':fmt(w);
-            const cTxt=c.cartIncl?'<small>incl.</small>':(c.cartNd?'<small>n.d.</small>':fmt(ct));
-            rows+=`<tr><td>${s.l}</td><td class="v">${wTxt}</td><td class="v">${cTxt}</td></tr>`;
-          }
-          blocks+=`<div class="grid-block"><div class="gh">${dl}</div><table class="mini">
-            <tr><td class="mh">Plage</td><td class="v mh">Marcheur</td><td class="v mh">+ Voit.</td></tr>${rows}</table></div>`;
-        }
-        const secHead = c.seasons?`<div class="sec-head"><span class="s-pill ${sec.cls}">${sec.title}</span><span class="sec-sub">${sec.sub}</span></div>`:'';
-        body+=`<div class="season-sec">${secHead}${blocks}</div>`;
+  let body="";
+  for(const sec of seasonSections(c)){
+    let blocks="";
+    for(const [dk,dl] of dayDefs){
+      const raw=rawDay(c,dk,sec.grille);
+      if(typeof raw==='string'){
+        const ref = raw==='sem'?'la semaine':(raw==='fds'?'la fin de semaine':raw);
+        blocks+=`<div class="dayline"><span class="dl-d">${dl}</span><span class="dl-ref">= ${ref}</span></div>`;
+        continue;
       }
+      if(!Array.isArray(raw)||!raw.length) continue;
+      let rows="";
+      for(const s of raw){
+        const w=priceWalk(c,s,false);
+        const ct=priceCart(c,s,false);
+        const wTxt=(s.w==null)?'<small>voit. oblig.</small>':fmt(w);
+        const cTxt=c.cartIncl?'<small>incl.</small>':(c.cartNd?'<small>n.d.</small>':fmt(ct));
+        rows+=`<tr><td>${s.l}</td><td class="v">${wTxt}</td><td class="v">${cTxt}</td></tr>`;
+      }
+      blocks+=`<div class="grid-block"><div class="gh">${dl}</div><table class="mini">
+        <tr><td class="mh">Plage</td><td class="v mh">Marcheur</td><td class="v mh">+ Voit.</td></tr>${rows}</table></div>`;
     }
-    card.innerHTML=`<h3>${vfPill(c)}<span>${c.n}</span></h3>
-      <div class="meta">${c.t} · ${c.region} · ${holesLabel(c)} · ${taxLbl}</div>
-      <div class="badges">${badges}</div>${body}
-      <div class="foot">${c.note}</div>`;
-    box.appendChild(card);
+    const secHead = c.seasons?`<div class="sec-head"><span class="s-pill ${sec.cls}">${sec.title}</span><span class="sec-sub">${sec.sub}</span></div>`:'';
+    body+=`<div class="season-sec">${secHead}${blocks}</div>`;
   }
-  if(!count) box.innerHTML=`<div class="nd-txt" style="padding:24px 4px">Aucun club ne correspond à ta recherche.</div>`;
+  return body;
 }
 // ====== STATS ======
 function renderStats(){
@@ -961,15 +928,45 @@ function renderInfo(){
   const resBtn=c.url?`<a class="badge b-warn" href="${c.url}" target="_blank" rel="noopener" style="text-decoration:none">Réserver / tarifs →</a>`:'';
   const telBtn=c.tel?`<a class="badge b-info" href="tel:${c.tel.replace(/\s/g,'')}" style="text-decoration:none">☎ ${c.tel}</a>`:'';
   const approx=c.geoApprox?`<span class="tax-note">Position sur la carte approximative.</span>`:'';
+  // grille tarifaire complète (18 trous)
+  const tariffs=tariffGridHTML(c);
+  // grille 9 trous éventuelle
+  let nineBlock="";
+  if(c.g9){
+    const dn=[['sem','Lundi – jeudi'],['ven','Vendredi'],['fds','Fin de semaine + fériés']];
+    let blocks="";
+    for(const [dk,dl] of dn){
+      let raw=c.g9[dk]; if(typeof raw==='string') raw=c.g9[raw];
+      if(!Array.isArray(raw)||!raw.length) continue;
+      let rows="";
+      for(const s of raw){
+        const wTxt=(s.w==null)?'<small>sur demande</small>':fmt(s.w);
+        const cTxt=(s.c===0)?'<small>incl.</small>':((s.w==null)?'<small>—</small>':fmt(s.w+(s.c||0)));
+        rows+=`<tr><td>${s.l}</td><td class="v">${wTxt}</td><td class="v">${cTxt}</td></tr>`;
+      }
+      blocks+=`<div class="grid-block"><div class="gh">${dl}</div><table class="mini">
+        <tr><td class="mh">Plage</td><td class="v mh">Marcheur</td><td class="v mh">+ Voit.</td></tr>${rows}</table></div>`;
+    }
+    const conf=c.vf9==='dyn'?' <span class="vf vf-dyn" title="À confirmer">~</span>':'';
+    nineBlock=`<div class="season-sec"><div class="sec-head"><span class="s-pill s-uni">9 trous${conf}</span></div>${blocks}</div>`;
+  }
   box.innerHTML=`
-    <div class="card" style="max-width:560px">
-      <h3>${vfPill(c)}${c.base} <span class="badge b-info">${holesLabel(c)}</span></h3>
-      <div class="meta">${c.t} · ${c.region}</div>
-      <div class="grid-block"><div class="gh">Saisons</div>${secs}</div>
-      <div class="grid-block"><div class="gh">Voiturette</div><div class="dayline"><span class="dl-d">${cartLine}</span></div></div>
-      <div class="grid-block"><div class="gh">Taxes</div><div class="dayline"><span class="dl-d">${taxLine}</span></div></div>
-      <div class="grid-block"><div class="gh">Réserver</div><div class="badges" style="margin-top:8px;gap:8px">${resBtn}${telBtn}${(!resBtn&&!telBtn)?'<span class="nd-txt">Aucun lien disponible</span>':''}</div></div>
-      <div class="foot">${c.note}${approx?'<br>'+approx:''}</div>
+    <div class="info-split">
+      <div class="card info-left">
+        <h3>${vfPill(c)}${c.base} <span class="badge b-info">${holesLabel(c)}</span></h3>
+        <div class="meta">${c.t} · ${c.region}</div>
+        <div class="grid-block"><div class="gh">Saisons</div>${secs}</div>
+        <div class="grid-block"><div class="gh">Voiturette</div><div class="dayline"><span class="dl-d">${cartLine}</span></div></div>
+        <div class="grid-block"><div class="gh">Taxes</div><div class="dayline"><span class="dl-d">${taxLine}</span></div></div>
+        <div class="grid-block"><div class="gh">Réserver</div><div class="badges" style="margin-top:8px;gap:8px">${resBtn}${telBtn}${(!resBtn&&!telBtn)?'<span class="nd-txt">Aucun lien disponible</span>':''}</div></div>
+        <div class="foot">${c.note}${approx?'<br>'+approx:''}</div>
+      </div>
+      <div class="card info-right">
+        <h3 style="font-size:1.1rem">Grille des tarifs</h3>
+        <div class="meta">18 trous · ${c.tax?'taxes incluses':'taxes en sus'}</div>
+        ${tariffs}
+        ${nineBlock}
+      </div>
     </div>`;
 }
 // ====== CARTE ======
@@ -1017,9 +1014,8 @@ function syncSeg(id,val){
 // init date inputs to today
 document.getElementById('selDate').value=TODAY;
 document.getElementById('selDateS').value=TODAY;
-// peuple le dropdown de clubs (fiches)
+// peuple le dropdown de clubs (onglet Club de golf)
 const BASES=[...new Set(CLUBS.map(c=>c.base))].sort((a,b)=>a.localeCompare(b,'fr'));
-document.getElementById('selClubF').innerHTML='<option value="all">Tous les clubs</option>'+BASES.map(b=>`<option value="${b}">${b}</option>`).join('');
 document.getElementById('selClubI').innerHTML=BASES.map(b=>`<option value="${b}">${b}</option>`).join('');
 STI.club=BASES[0];
 seg('segSort','sort','sort',ST,renderComp);
@@ -1044,15 +1040,12 @@ document.querySelectorAll('thead th[data-col]').forEach(th=>{
   th.addEventListener('click',()=>{const col=th.dataset.col; if(col==='walk'||col==='cart'){ST.sort=col;
     document.querySelectorAll('#segSort button').forEach(b=>b.classList.toggle('on',b.dataset.sort===col)); renderComp();}});
 });
-document.getElementById('selClubF').addEventListener('change',e=>{STF.club=e.target.value;renderFiches();});
 document.getElementById('selClubI').addEventListener('change',e=>{STI.club=e.target.value;renderInfo();});
-document.getElementById('searchF').addEventListener('input',e=>{STF.q=e.target.value;renderFiches();});
 document.getElementById('selDateS').addEventListener('change',e=>{STS.date=e.target.value||TODAY;renderStats();});
 document.getElementById('selTimeS').addEventListener('change',e=>{STS.time=parseFloat(e.target.value);renderStats();});
 function goToTab(tab){
   document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));
   document.querySelectorAll('section.panel').forEach(x=>x.classList.toggle('active',x.id===tab));
-  if(tab==='fiches')renderFiches();
   if(tab==='stats')renderStats();
   if(tab==='info')renderInfo();
   if(tab==='carte')showMap();

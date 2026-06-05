@@ -17,12 +17,11 @@ saison (haute, basse…), avec ou sans voiturette.
   Le meilleur tarif marcheur est mis en avant. Un badge indique le format réel de
   chaque parcours (18, 9, 13, 9×2, 27). En mode 9 trous, les clubs qui n'offrent
   pas de 9 trous sont grisés.
-- **Fiches par club** — la grille tarifaire complète de chaque club (toutes les
-  plages horaires, semaine et fin de semaine, par saison).
+- **Club de golf** — choisis un club et vois toute son information au même endroit :
+  saisons (haute/basse), politique et prix de la voiturette, statut des taxes, bouton vers
+  la page de réservation/tarifs du club et téléphone (à gauche), plus la **grille tarifaire
+  complète** 18 et 9 trous (à droite sur desktop, en dessous sur mobile).
 - **Statistiques** — moyennes, min/max et classement des tarifs pour la date choisie.
-- **Information** — choisis un club et vois ses saisons (haute/basse), la politique et le
-  prix de la voiturette, le statut des taxes, un bouton vers la page de réservation/tarifs
-  du club, et son téléphone.
 - **Carte** — tous les clubs sur une carte interactive (Leaflet + OpenStreetMap) ; clique
   un marqueur pour le tarif et le lien de réservation.
 

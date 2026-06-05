@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs / temporaire
+*.log
+.cache/
+
+# Claude Code (config locale)
+.claude/

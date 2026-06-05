@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "saison": "2026",
+    "devise": "CAD",
+    "note_globale": "Prix = prix AFFICHÉ (taxes en sus) sauf si taxes_incluses=true pour un golf donné.",
+    "derniere_maj": "2026-06-04"
+  },
+  "golfs": [
+    {
+      "id": "saint-jerome",
+      "nom": "Golf Saint-Jérôme",
+      "region": "Basses-Laurentides",
+      "url": "http://www.golfstjerome.com/",
+      "taxes_incluses": true,
+      "verifie": true,
+      "source": "Capture fournie par Simon",
+      "voiturette": { "statut": "a_confirmer", "prix": null, "note": "Non affichée sur la grille" },
+      "parcours": [
+        {
+          "nom": "18 trous",
+          "tarifs": [
+            { "jour": "Lun-Jeu", "tranche": "Matin", "heure": null, "prix": 56.00, "trous": 18 },
+            { "jour": "Vendredi", "tranche": "Matin", "heure": null, "prix": 61.00, "trous": 18 },
+            { "jour": "FDS/Fériés", "tranche": "Matin", "heure": null, "prix": 66.00, "trous": 18 },
+            { "jour": "Lun-Jeu", "tranche": "Après 14h", "heure": "14:00", "prix": 47.00, "trous": 18 },
+            { "jour": "Vendredi", "tranche": "Après 14h", "heure": "14:00", "prix": 52.00, "trous": 18 },
+            { "jour": "FDS/Fériés", "tranche": "Après 14h", "heure": "14:00", "prix": 59.00, "trous": 18 },
+            { "jour": "Tous", "tranche": "Après 16h (= 9 trous)", "heure": "16:00", "prix": 35.00, "trous": 9 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mirabel",
+      "nom": "Golf Mirabel",
+      "region": "Basses-Laurentides",
+      "url": "http://www.golfmirabel.com/",
+      "taxes_incluses": false,
+      "verifie": true,
+      "source": "Capture fournie par Simon",
+      "voiturette": { "statut": "a_part", "prix": 21.75, "par": "personne", "note": "Aucune voiturette après 15h sauf membre/ligue/carte rabais" },
+      "parcours": [
+        {
+          "nom": "Campagnard",
+          "tarifs": [
+            { "jour": "Semaine", "tranche": "Régulier", "heure": null, "prix": 43.00, "trous": 18 },
+            { "jour": "Semaine", "tranche": "Après 14h", "heure": "14:00", "prix": 34.50, "trous": 18 },
+            { "jour": "FDS/Fériés", "tranche": "Régulier", "heure": null, "prix": 48.50, "trous": 18 },
+            { "jour": "FDS/Fériés", "tranche": "Après 14h", "heure": "14:00", "prix": 39.00, "trous": 18 }
+          ]
+        },
+        {
+          "nom": "Boisé",
+          "tarifs": [
+            { "jour": "Semaine", "tranche": "Régulier", "heure": null, "prix": 48.00, "trous": 18 },
+            { "jour": "Semaine", "tranche": "Après 14h", "heure": "14:00", "prix": 39.50, "trous": 18 },
+            { "jour": "FDS/Fériés", "tranche": "Régulier", "heure": null, "prix": 55.00, "trous": 18 },
+            { "jour": "FDS/Fériés", "tranche": "Après 14h", "heure": "14:00", "prix": 44.00, "trous": 18 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mont-gabriel",
+      "nom": "Golf Mont Gabriel",
+      "region": "Hautes-Laurentides (Pays-d'en-Haut)",
+      "url": "https://www.montgabriel.com/",
+      "taxes_incluses": false,
+      "verifie": true,
+      "source": "Capture fournie par Simon",
+      "voiturette": { "statut": "incluse", "prix": 0, "note": "Voiturette partagée incluse dans le prix" },
+      "parcours": [
+        {
+          "nom": "Basse saison (ouverture–19 juin, 12 sept–fin)",
+          "tarifs": [
+            { "jour": "Lun-Ven", "tranche": "6h-8h", "heure": null, "prix": 64.00, "trous": 18 },
+            { "jour": "Lun-Ven", "tranche": "8h-14h", "heure": null, "prix": 76.00, "trous": 18 },
+            { "jour": "Lun-Ven", "tranche": "14h-17h30", "heure": "14:00", "prix": 64.00, "trous": 18 },
+            { "jour": "FDS", "tranche": "6h-8h", "heure": null, "prix": 73.00, "trous": 18 },
+            { "jour": "FDS", "tranche": "8h-14h", "heure": null, "prix": 85.00, "trous": 18 },
+            { "jour": "FDS", "tranche": "14h-17h30", "heure": "14:00", "prix": 73.00, "trous": 18 }
+          ]
+        },
+        {
+          "nom": "Saison régulière (20 juin–11 sept)",
+          "tarifs": [
+            { "jour": "Lun-Ven", "tranche": "6h-8h", "heure": null, "prix": 69.00, "trous": 18 },
+            { "jour": "Lun-Ven", "tranche": "8h-14h", "heure": null, "prix": 80.00, "trous": 18 },
+            { "jour": "Lun-Ven", "tranche": "14h-17h30", "heure": "14:00", "prix": 69.00, "trous": 18 },
+            { "jour": "FDS", "tranche": "6h-8h", "heure": null, "prix": 79.00, "trous": 18 },
+            { "jour": "FDS", "tranche": "8h-14h", "heure": null, "prix": 89.00, "trous": 18 },
+            { "jour": "FDS", "tranche": "14h-17h30", "heure": "14:00", "prix": 79.00, "trous": 18 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "golf-4d",
+      "nom": "Golf 4D",
+      "region": "Basses-Laurentides",
+      "url": "http://www.golf4d.ca/",
+      "taxes_incluses": false,
+      "verifie": true,
+      "source": "Capture fournie par Simon",
+      "voiturette": { "statut": "a_part", "prix": 25.00, "par": "demi-voiturette / 18 trous", "note": "Accès évalué selon l'état du terrain" },
+      "parcours": [
+        {
+          "nom": "Parcours 1",
+          "tarifs": [
+            { "jour": "Lun-Jeu", "tranche": "Spécial en vigueur", "heure": null, "prix": 60.00, "trous": 18, "note": "Promo présentement en vigueur" },
+            { "jour": "Ven-Dim", "tranche": "Spécial en vigueur", "heure": null, "prix": 65.00, "trous": 18, "note": "Promo présentement en vigueur" },
+            { "jour": "Lun-Jeu", "tranche": "Avant 13h", "heure": null, "prix": 65.00, "trous": 18 },
+            { "jour": "Lun-Jeu", "tranche": "13h-15h", "heure": "13:00", "prix": 60.00, "trous": 18 },
+            { "jour": "Lun-Jeu", "tranche": "Après 15h", "heure": "15:00", "prix": 50.00, "trous": 18 },
+            { "jour": "Ven-Dim/Fériés", "tranche": "Avant 13h", "heure": null, "prix": 75.00, "trous": 18 },
+            { "jour": "Ven-Dim/Fériés", "tranche": "13h-15h", "heure": "13:00", "prix": 70.00, "trous": 18 },
+            { "jour": "Ven-Dim/Fériés", "tranche": "Après 15h", "heure": "15:00", "prix": 60.00, "trous": 18 }
+          ]
+        },
+        {
+          "nom": "Parcours 2",
+          "tarifs": [
+            { "jour": "Lun-Jeu", "tranche": "Spécial en vigueur", "heure": null, "prix": 60.00, "trous": 18, "note": "Promo présentement en vigueur" },
+            { "jour": "Ven-Dim", "tranche": "Spécial en vigueur", "heure": null, "prix": 65.00, "trous": 18, "note": "Promo présentement en vigueur" },
+            { "jour": "Lun-Jeu", "tranche": "Avant 13h", "heure": null, "prix": 75.00, "trous": 18 },
+            { "jour": "Lun-Jeu", "tranche": "13h-15h", "heure": "13:00", "prix": 70.00, "trous": 18 },
+            { "jour": "Lun-Jeu", "tranche": "Après 15h", "heure": "15:00", "prix": 60.00, "trous": 18 },
+            { "jour": "Ven-Dim/Fériés", "tranche": "Avant 13h", "heure": null, "prix": 80.00, "trous": 18 },
+            { "jour": "Ven-Dim/Fériés", "tranche": "13h-15h", "heure": "13:00", "prix": 75.00, "trous": 18 },
+            { "jour": "Ven-Dim/Fériés", "tranche": "Après 15h", "heure": "15:00", "prix": 65.00, "trous": 18 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "arundel",
+      "nom": "Golf Arundel",
+      "region": "Hautes-Laurentides",
+      "url": "http://www.golfarundel.com/",
+      "taxes_incluses": false,
+      "verifie": true,
+      "source": "Capture fournie par Simon",
+      "saison_active": "31 mai–29 sept (en vigueur au 4 juin 2026)",
+      "voiturette": { "statut": "a_part", "prix": 23.00, "note": "Avant 16h 23$, après 16h 14$ (tranche 31 mai–29 sept)" },
+      "parcours": [
+        {
+          "nom": "18 trous",
+          "tarifs": [
+            { "jour": "Lun-Jeu", "tranche": "Avant 14h", "heure": null, "prix": 64.00, "trous": 18 },
+            { "jour": "Lun-Jeu", "tranche": "Après 14h", "heure": "14:00", "prix": 58.00, "trous": 18 },
+            { "jour": "Lun-Jeu", "tranche": "Après 16h", "heure": "16:00", "prix": 26.00, "trous": 18 },
+            { "jour": "Ven-Dim", "tranche": "Avant 14h", "heure": null, "prix": 71.00, "trous": 18 },
+            { "jour": "Ven-Dim", "tranche": "Après 14h", "heure": "14:00", "prix": 65.00, "trous": 18 },
+            { "jour": "Ven-Dim", "tranche": "Après 16h", "heure": "16:00", "prix": 28.00, "trous": 18 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "griffon",
+      "nom": "Golf Le Griffon des Sources",
+      "region": "Basses-Laurentides",
+      "url": "http://www.golfgriffon.com/",
+      "taxes_incluses": "a_confirmer",
+      "verifie": true,
+      "source": "Capture fournie par Simon",
+      "voiturette": { "statut": "mixte", "note": "Journalier = à pied; tarifs après 13h/16h = voiturette incluse" },
+      "parcours": [
+        {
+          "nom": "18 trous",
+          "tarifs": [
+            { "jour": "Lun-Jeu", "tranche": "Journalier (à pied)", "heure": null, "prix": 88.00, "trous": 18 },
+            { "jour": "Ven-Dim", "tranche": "Journalier (à pied)", "heure": null, "prix": 98.75, "trous": 18 },
+            { "jour": "Lun-Jeu", "tranche": "Après 13h (voiturette incl.)", "heure": "13:00", "prix": 88.00, "trous": 18 },
+            { "jour": "Ven-Dim", "tranche": "Après 13h (voiturette incl.)", "heure": "13:00", "prix": 98.75, "trous": 18 },
+            { "jour": "Lun-Jeu", "tranche": "Après 16h (voiturette incl.)", "heure": "16:00", "prix": 75.00, "trous": 18 },
+            { "jour": "Ven-Dim", "tranche": "Après 16h (voiturette incl.)", "heure": "16:00", "prix": 75.00, "trous": 18 },
+            { "jour": "Lun-Jeu", "tranche": "9 trous (voiturette incl.)", "heure": null, "prix": 65.00, "trous": 9 },
+            { "jour": "Ven-Dim", "tranche": "9 trous (voiturette incl., après 14h)", "heure": "14:00", "prix": 70.00, "trous": 9 },
+            { "jour": "Lun-Jeu", "tranche": "9 trous après 16h (voiturette incl.)", "heure": "16:00", "prix": 50.00, "trous": 9 },
+            { "jour": "Ven-Dim", "tranche": "9 trous après 16h (voiturette incl.)", "heure": "16:00", "prix": 50.00, "trous": 9 }
+          ]
+        }
+      ]
+    }
+  ]
+}

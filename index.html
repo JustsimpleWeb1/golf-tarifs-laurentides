@@ -920,7 +920,8 @@ function initMap(){
     const priceLine = c.cartPol!=='pied'
       ? `Dès ${ct!=null?fmt(ct):(w!=null?fmt(w):'—')} (voit. incl.)`
       : `Dès ${w!=null?fmt(w):'—'} (marcheur)`;
-    const link=c.url?`<br><a href="${c.url}" target="_blank" rel="noopener">Réserver / tarifs →</a>`:'';
+    const safeBase=c.base.replace(/'/g,"\\'");
+    const link=`<br><a href="#" onclick="openClubInfo('${safeBase}');return false;">Voir la fiche →</a>`;
     L.marker([c.lat,c.lng]).addTo(MAP)
       .bindPopup(`<b>${c.base}</b><br><span style="color:#555">${c.t}</span><br>${priceLine}${link}`);
   }
@@ -973,18 +974,24 @@ document.getElementById('selClubI').addEventListener('change',e=>{STI.club=e.tar
 document.getElementById('searchF').addEventListener('input',e=>{STF.q=e.target.value;renderFiches();});
 document.getElementById('selDateS').addEventListener('change',e=>{STS.date=e.target.value||TODAY;renderStats();});
 document.getElementById('selTimeS').addEventListener('change',e=>{STS.time=parseFloat(e.target.value);renderStats();});
+function goToTab(tab){
+  document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));
+  document.querySelectorAll('section.panel').forEach(x=>x.classList.toggle('active',x.id===tab));
+  if(tab==='fiches')renderFiches();
+  if(tab==='stats')renderStats();
+  if(tab==='info')renderInfo();
+  if(tab==='carte')showMap();
+}
 document.querySelectorAll('nav.tabs button').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.remove('active'));
-    document.querySelectorAll('section.panel').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    document.getElementById(b.dataset.tab).classList.add('active');
-    if(b.dataset.tab==='fiches')renderFiches();
-    if(b.dataset.tab==='stats')renderStats();
-    if(b.dataset.tab==='info')renderInfo();
-    if(b.dataset.tab==='carte')showMap();
-  });
+  b.addEventListener('click',()=>goToTab(b.dataset.tab));
 });
+// ouvre la fiche Information d'un club (appelé depuis les popups de la carte)
+function openClubInfo(base){
+  STI.club=base;
+  const sel=document.getElementById('selClubI'); if(sel) sel.value=base;
+  goToTab('info');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 renderComp();
 </script>
 </body>

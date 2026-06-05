@@ -55,6 +55,11 @@
   .filters{display:flex;flex-wrap:wrap;gap:14px}
   .filters .ctrl{flex:1 1 180px}
   .filters.few .ctrl{flex:0 1 240px}
+  /* rangée 2 : recherche (extensible) + tri côte à côte, empilés sur mobile */
+  .searchrow{display:flex;gap:14px;align-items:flex-end}
+  .searchrow .search-ctrl{flex:1 1 auto;min-width:0}
+  .searchrow .sort-ctrl{flex:0 0 auto}
+  @media(max-width:640px){ .searchrow{flex-wrap:wrap} .searchrow .search-ctrl,.searchrow .sort-ctrl{flex:1 1 100%} }
   .ctrl{display:flex;flex-direction:column;gap:7px;min-width:0}
   .ctrl label{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:#88a094;font-weight:700}
   .ctrl.date label{color:var(--gold-soft)}
@@ -206,10 +211,6 @@
   <!-- ============ COMPARATEUR ============ -->
   <section class="panel active" id="comp">
     <div class="controls">
-      <div class="searchbar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input type="search" id="search" placeholder="Rechercher un club ou une ville…">
-      </div>
       <div class="filters">
         <div class="ctrl date">
           <label>Date de jeu</label>
@@ -233,15 +234,6 @@
           </select>
         </div>
         <div class="ctrl">
-          <label>Voiturette</label>
-          <select id="selCart">
-            <option value="all">Toutes</option>
-            <option value="pied">À pied avantageux</option>
-            <option value="incl">Voiturette incluse</option>
-            <option value="oblig">Voiturette obligatoire</option>
-          </select>
-        </div>
-        <div class="ctrl">
           <label>Heure de départ</label>
           <select id="selTime">
             <option value="8">Départ matin (avant 11h)</option>
@@ -253,7 +245,16 @@
             <option value="17.5">Soirée (17h+)</option>
           </select>
         </div>
-        <div class="ctrl">
+      </div>
+      <div class="searchrow">
+        <div class="ctrl search-ctrl">
+          <label>Recherche</label>
+          <div class="searchbar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="search" id="search" placeholder="Rechercher un club ou une ville…">
+          </div>
+        </div>
+        <div class="ctrl sort-ctrl">
           <label>Trier par</label>
           <div class="seg" id="segSort">
             <button data-sort="walk" class="on">Marcheur</button>
@@ -342,7 +343,7 @@
     <div class="legend"><span>📍 Un point par club · clique un marqueur pour le tarif et le lien de réservation. Quelques positions sont approximatives (centre du secteur).</span></div>
   </section>
   <footer>
-    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous ; tarifs 9 trous marqués ~ sont à confirmer. Construit pour Simon · Just Simple Web. <b>v11 · 5 juin 2026</b></div>
+    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous ; tarifs 9 trous marqués ~ sont à confirmer. Construit pour Simon · Just Simple Web. <b>v12 · 5 juin 2026</b></div>
   </footer>
 </div>
 <script>
@@ -736,7 +737,7 @@ function heat(v,min,max){
 function mix(a,b,k){return a.map((v,i)=>Math.round(v+(b[i]-v)*k));}
 // ----- state -----
 const TODAY = new Date().toISOString().slice(0,10);
-const ST={time:16,sort:"walk",q:"",region:"all",cart:"all",date:TODAY,holes:18};
+const ST={time:16,sort:"walk",q:"",region:"all",date:TODAY,holes:18};
 const STS={time:16,date:TODAY};
 const STI={club:""};
 const timeLabels={8:"matin",11:"à partir de 11h",13:"à partir de 13h",14:"à partir de 14h",15:"à partir de 15h",16:"à partir de 16h",17.5:"soirée"};
@@ -757,7 +758,6 @@ function renderComp(){
   }
   let vis=rows.filter(r=>{
     if(ST.region!=='all' && r.c.region!==ST.region) return false;
-    if(ST.cart!=='all' && r.c.cartPol!==ST.cart) return false;
     if(ST.q){ const s=(r.c.n+" "+r.c.t+" "+r.c.region).toLowerCase(); if(!s.includes(ST.q.toLowerCase())) return false; }
     return true;
   });
@@ -1022,16 +1022,14 @@ seg('segSort','sort','sort',ST,renderComp);
 document.getElementById('selDate').addEventListener('change',e=>{ST.date=e.target.value||TODAY;renderComp();});
 document.getElementById('selTime').addEventListener('change',e=>{ST.time=parseFloat(e.target.value);renderComp();});
 document.getElementById('selRegion').addEventListener('change',e=>{ST.region=e.target.value;renderComp();});
-document.getElementById('selCart').addEventListener('change',e=>{ST.cart=e.target.value;renderComp();});
 document.getElementById('selHoles').addEventListener('change',e=>{ST.holes=parseInt(e.target.value,10);renderComp();});
 document.getElementById('search').addEventListener('input',e=>{ST.q=e.target.value;renderComp();});
 document.getElementById('resetBtn').addEventListener('click',()=>{
-  Object.assign(ST,{time:16,sort:"walk",q:"",region:"all",cart:"all",date:TODAY,holes:18});
+  Object.assign(ST,{time:16,sort:"walk",q:"",region:"all",date:TODAY,holes:18});
   syncSeg('segSort',ST.sort);
   document.getElementById('selDate').value=TODAY;
   document.getElementById('selTime').value="16";
   document.getElementById('selRegion').value="all";
-  document.getElementById('selCart').value="all";
   document.getElementById('selHoles').value="18";
   document.getElementById('search').value="";
   renderComp();

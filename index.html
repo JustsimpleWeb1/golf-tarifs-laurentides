@@ -676,7 +676,7 @@ function holesLabel(c){
   if(c.holes===9) return c.played2x?"9 trous ×2":"9 trous";
   return "18 trous";
 }
-// --- fiches : afficher toutes les grilles sans dépendre d'une date ---
+// --- afficher toutes les grilles sans dépendre d'une date ---
 function rawDay(club,day,grille){
   const src=(grille==='lo'&&club.lo)?club.lo:club;
   return (src[day]!==undefined)?src[day]:club[day];

@@ -213,6 +213,13 @@
           <input type="date" id="selDate">
         </div>
         <div class="ctrl">
+          <label>Parcours</label>
+          <select id="selHoles">
+            <option value="18">18 trous</option>
+            <option value="9">9 trous</option>
+          </select>
+        </div>
+        <div class="ctrl">
           <label>Région</label>
           <select id="selRegion">
             <option value="all">Toutes les régions</option>
@@ -348,7 +355,7 @@
     <div class="legend"><span>📍 Un point par club · clique un marqueur pour le tarif et le lien de réservation. Quelques positions sont approximatives (centre du secteur).</span></div>
   </section>
   <footer>
-    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Construit pour Simon · Just Simple Web. <b>v9 · 5 juin 2026</b></div>
+    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous ; tarifs 9 trous marqués ~ sont à confirmer. Construit pour Simon · Just Simple Web. <b>v10 · 5 juin 2026</b></div>
   </footer>
 </div>
 <script>
@@ -578,6 +585,38 @@ const CLUB_META={
  "Club de Golf Tremblant":{tel:"866 783-5634",url:"https://www.tremblant.ca/fr-CA/quoi-faire/golf/reservations",lat:46.1970,lng:-74.5950,geoApprox:true},
  "Club de Golf Terrebonne":{tel:"450 477-1817",url:"https://www.golfterrebonne.ca/index.php?option=com_ggpublic&req=teetimes&lang=fr",lat:45.7380,lng:-73.7000,geoApprox:true}
 };
+// ----- nombre de trous + tarifs 9 trous (par club, vérifié sur sites officiels 5 juin 2026) -----
+// holes: format réel du parcours (badge). played2x: 9 trous joué deux fois pour 18.
+// g9: grille 9 trous {sem,ven,fds} en slots {s,l,w,c}. Absente = pas de 9 trous → grisé en mode 9t.
+// vf9:'dyn' = tarif 9 trous à confirmer (incomplet/dynamique).
+const CLUB9={
+ "Club de golf Bel-Air":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:24.35,c:6.09}],ven:"sem",fds:[{s:0,l:"9 trous",w:26.09,c:6.09}]}},
+ "Golf Sainte-Agathe":{holes:9,played2x:true,g9:{sem:[{s:0,l:"9t (8h–14h)",w:28.70,c:15.22},{s:14,l:"9t (après 14h)",w:20.00,c:15.22}],ven:"sem",fds:[{s:0,l:"9t (8h–14h)",w:31.31,c:15.22},{s:14,l:"9t (après 14h)",w:24.35,c:15.22}]}},
+ "Club de golf St-Janvier":{holes:18},
+ "Club de golf St-Jérôme":{holes:18,g9:{sem:[{s:16,l:"9t (après 16h)",w:35,c:19}],ven:"sem",fds:[{s:16,l:"9t (après 16h)",w:35,c:19}]},vf9:"dyn"},
+ "Club de golf Mirabel":{holes:18},
+ "Club de golf Le Diamant":{holes:18},
+ "Golf 4D":{holes:18},
+ "Golf Le Sélect":{holes:18},
+ "Club de golf Glendale":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:31.50,c:25.50}],ven:[{s:0,l:"9 trous",w:35.50,c:25.50}],fds:[{s:0,l:"9 trous",w:35.50,c:25.50}]},vf9:"dyn"},
+ "Golf Le Grand Duc":{holes:18,g9:{sem:[{s:15,l:"9t (après 15h)",w:22,c:22}],ven:"fds",fds:[{s:15,l:"9t (après 15h)",w:28,c:22}]}},
+ "Club de Golf Lorraine":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:37,c:23}],ven:"sem",fds:[{s:0,l:"9 trous",w:46,c:23}]}},
+ "Centre de Golf Le Versant":{holes:18,g9:{sem:[{s:0,l:"9t (Exécutif)",w:30,c:15}],ven:"fds",fds:[{s:0,l:"9t (Exécutif)",w:35,c:15}]}},
+ "Golf Champêtre":{holes:18},
+ "Club de golf Lachute":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:null,c:14.99}],ven:"sem",fds:[{s:0,l:"9 trous",w:null,c:14.99}]},vf9:"dyn"},
+ "Golf Ste-Rose":{holes:18},
+ "Club de golf Piedmont":{holes:13},
+ "Golf La Vallée de Sainte-Adèle":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:38,c:24}],ven:"sem",fds:[{s:0,l:"9 trous",w:39,c:24}]}},
+ "Golf Le Chantecler":{holes:18},
+ "Club de Golf Val-Morin":{holes:18,g9:{sem:[{s:15,l:"9t (après 15h, sem.)",w:45,c:13}],ven:"sem",fds:[{s:15,l:"9t (après 15h)",w:45,c:13}]},vf9:"dyn"},
+ "Club de golf Mont-Gabriel":{holes:18},
+ "Golf Royal Laurentien":{holes:18},
+ "Club de golf St-Donat":{holes:18,g9:{sem:[{s:0,l:"9t (dynamique)",w:null,c:7}],ven:"sem",fds:[{s:0,l:"9t (dynamique)",w:null,c:7}]},vf9:"dyn"},
+ "Golf Arundel":{holes:18},
+ "Golf Le Griffon des Sources":{holes:18,g9:{sem:[{s:0,l:"9t (voit. incl.)",w:65,c:0}],ven:"fds",fds:[{s:0,l:"9t (voit. incl.)",w:70,c:0}]},vf9:"dyn"},
+ "Club de Golf Tremblant":{holes:18},
+ "Club de Golf Terrebonne":{holes:27,g9:{sem:[{s:0,l:"9t (jour)",w:64,c:18},{s:12.5,l:"9t (12h30–15h)",w:60,c:18},{s:15,l:"9t (après 15h)",w:45,c:18}],ven:[{s:0,l:"9t (jour)",w:68,c:18},{s:12.5,l:"9t (12h30–15h)",w:64,c:18},{s:15,l:"9t (après 15h)",w:50,c:18}],fds:[{s:0,l:"9t (jour)",w:76,c:18},{s:12.5,l:"9t (12h30–15h)",w:64,c:18},{s:15,l:"9t (après 15h)",w:50,c:18}]},nine_note:"9 et 18 au même tarif marcheur (seule la voiturette diffère)."}
+};
 // ----- region + cart policy + verification -----
 const REGION_BY_TOWN={
  "Mirabel":"Basses-Laurentides","St-Jérôme":"Basses-Laurentides","Sainte-Sophie":"Basses-Laurentides",
@@ -600,6 +639,12 @@ CLUBS.forEach(c=>{
   c.lat = (meta.lat ?? null);
   c.lng = (meta.lng ?? null);
   c.geoApprox = !!meta.geoApprox;
+  const m9 = CLUB9[c.base] || {};
+  c.holes = m9.holes ?? 18;
+  c.played2x = !!m9.played2x;
+  c.g9 = m9.g9 || null;
+  c.vf9 = m9.vf9 || (m9.g9 ? 'ok' : null);
+  c.nine_note = m9.nine_note || "";
 });
 // ----- helpers -----
 function vfPill(c){
@@ -627,6 +672,22 @@ function slotFor(club,day,time,date){
   let pick=rs[0];
   for(const s of rs){ if(s.s<=time) pick=s; }
   return pick;
+}
+// --- 9 trous : grille indépendante de la saison (g9) ---
+function slot9For(club,day,time){
+  if(!club.g9)return null;
+  let rs=club.g9[day]; if(typeof rs==='string') rs=club.g9[rs];
+  if(!rs||!rs.length)return null;
+  let pick=rs[0];
+  for(const s of rs){ if(s.s<=time) pick=s; }
+  return pick;
+}
+// libellé du badge "trous"
+function holesLabel(c){
+  if(c.holes===27) return "27 trous";
+  if(c.holes===13) return "13 trous";
+  if(c.holes===9) return c.played2x?"9 trous ×2":"9 trous";
+  return "18 trous";
 }
 // --- fiches : afficher toutes les grilles sans dépendre d'une date ---
 function rawDay(club,day,grille){
@@ -688,7 +749,7 @@ function heat(v,min,max){
 function mix(a,b,k){return a.map((v,i)=>Math.round(v+(b[i]-v)*k));}
 // ----- state -----
 const TODAY = new Date().toISOString().slice(0,10);
-const ST={time:16,sort:"walk",q:"",region:"all",cart:"all",date:TODAY};
+const ST={time:16,sort:"walk",q:"",region:"all",cart:"all",date:TODAY,holes:18};
 const STF={q:"",club:"all"};
 const STS={time:16,date:TODAY};
 const STI={club:""};
@@ -697,14 +758,16 @@ const timeLabels={8:"matin",11:"à partir de 11h",13:"à partir de 13h",14:"à p
 function renderComp(){
   const tIncl = false;
   const day = dayType(ST.date);
+  const nine = ST.holes===9;
   const rows=[];
   for(const c of CLUBS){
     if(c.dataNd){rows.push({c,nd:true});continue;}
+    if(nine && !c.g9){ rows.push({c,no9:true}); continue; }
     const g=gridFor(c,ST.date);
-    const slot=slotFor(c,day,ST.time,ST.date);
+    const slot=nine?slot9For(c,day,ST.time):slotFor(c,day,ST.time,ST.date);
     const w=priceWalk(c,slot,tIncl);
     const ct=priceCart(c,slot,tIncl);
-    rows.push({c,g,slot,w,ct});
+    rows.push({c,g,slot,w,ct,nine});
   }
   let vis=rows.filter(r=>{
     if(ST.region!=='all' && r.c.region!==ST.region) return false;
@@ -713,7 +776,8 @@ function renderComp(){
     return true;
   });
   const ndRows=vis.filter(r=>r.nd);
-  let live=vis.filter(r=>!r.nd);
+  const no9Rows=vis.filter(r=>r.no9);
+  let live=vis.filter(r=>!r.nd&&!r.no9);
   const ws=live.map(r=>r.w).filter(v=>v!=null);
   const cs=live.map(r=>r.ct).filter(v=>v!=null);
   const wMin=Math.min(...ws),wMax=Math.max(...ws),cMin=Math.min(...cs),cMax=Math.max(...cs);
@@ -740,13 +804,22 @@ function renderComp(){
     let walkCell;
     if(r.w==null) walkCell=`<span class="b-oblig badge">voit. oblig.</span>`;
     else walkCell=`<span class="price-pill" style="background:${heat(r.w,wMin,wMax)}">${fmt(r.w)}</span>`;
+    const tofc=r.nine&&r.c.vf9==='dyn'?'<span class="vf vf-dyn" title="Tarif 9 trous à confirmer">~</span>':vfPill(r.c);
+    const holeBadge=`<span class="badge b-info" title="Format du parcours">${holesLabel(r.c)}</span>`;
+    const seasonCell = r.nine ? `<span class="s-pill s-uni">9 trous</span>` : `<span class="s-pill ${r.g.cls}">${r.g.label}</span>`;
     tr.innerHTML=`
-      <td><div class="club-name">${isBest?'<span class="crown">♦</span>':''}${vfPill(r.c)}${r.c.n}</div><div class="town">${r.c.t} · ${r.c.region}</div></td>
+      <td><div class="club-name">${isBest?'<span class="crown">♦</span>':''}${tofc}${r.c.n} ${holeBadge}</div><div class="town">${r.c.t} · ${r.c.region}</div></td>
       <td class="num">${walkCell}</td>
       <td class="num">${cartCell}</td>
-      <td><span class="s-pill ${r.g.cls}">${r.g.label}</span></td>
+      <td>${seasonCell}</td>
       <td><span class="slotlbl">${r.slot?r.slot.l:'—'}</span></td>
       <td><div class="badges">${badges||'<span class="badge b-info">—</span>'}</div></td>`;
+    tb.appendChild(tr);
+  }
+  for(const r of no9Rows){
+    const tr=document.createElement('tr'); tr.className="nd";
+    tr.innerHTML=`<td><div class="club-name">${vfPill(r.c)}${r.c.n} <span class="badge b-info">${holesLabel(r.c)}</span></div><div class="town">${r.c.t} · ${r.c.region}</div></td>
+      <td colspan="5"><span class="nd-txt">Pas de tarif 9 trous (18 trous seulement)</span></td>`;
     tb.appendChild(tr);
   }
   for(const r of ndRows){
@@ -756,15 +829,15 @@ function renderComp(){
     tb.appendChild(tr);
   }
   document.getElementById('resCount').innerHTML=
-    `<b>${live.length}</b> parcours affichés`+(ndRows.length?` · ${ndRows.length} sans données`:'');
+    `<b>${live.length}</b> parcours affichés`+(no9Rows.length?` · ${no9Rows.length} sans 9 trous`:'')+(ndRows.length?` · ${ndRows.length} sans données`:'');
   document.getElementById('scenarioText').textContent=
-    `${frDate(ST.date)} · tarif ${dayTypeLabel[day]} · ${timeLabels[ST.time]}`;
+    `${frDate(ST.date)} · tarif ${dayTypeLabel[day]} · ${timeLabels[ST.time]} · ${nine?'9 trous':'18 trous'}`;
   document.querySelectorAll('thead th').forEach(th=>{th.classList.remove('sorted');});
   const sortedTh=document.querySelector(`thead th[data-col="${key}"]`); if(sortedTh)sortedTh.classList.add('sorted');
   const cheapest=live.find(r=>r.w===bestWalk);
   const note=document.getElementById('compNote');
   if(cheapest){
-    note.innerHTML=`<b>${frDate(ST.date)}, tarif ${dayTypeLabel[day]}, ${timeLabels[ST.time]} :</b> le marcheur le plus abordable est <b>${cheapest.c.n}</b> à <b>${fmt(bestWalk)}</b>. ${day==='fds'&&ST.time<15?'⚠️ Royal Laurentien et Mont-Gabriel imposent la voiturette à cette plage.':''}`;
+    note.innerHTML=`<b>${frDate(ST.date)}, ${nine?'9 trous':'18 trous'}, tarif ${dayTypeLabel[day]}, ${timeLabels[ST.time]} :</b> le marcheur le plus abordable est <b>${cheapest.c.n}</b> à <b>${fmt(bestWalk)}</b>. ${nine?'Le tarif 9 trous est indépendant de la saison ; certains clubs ne l\'offrent qu\'en fin de journée. ~ = à confirmer.':(day==='fds'&&ST.time<15?'⚠️ Royal Laurentien et Mont-Gabriel imposent la voiturette à cette plage.':'')}`;
   } else note.innerHTML="";
 }
 // ====== FICHES ======
@@ -811,7 +884,7 @@ function renderFiches(){
       }
     }
     card.innerHTML=`<h3>${vfPill(c)}<span>${c.n}</span></h3>
-      <div class="meta">${c.t} · ${c.region} · 18 trous · ${taxLbl}</div>
+      <div class="meta">${c.t} · ${c.region} · ${holesLabel(c)} · ${taxLbl}</div>
       <div class="badges">${badges}</div>${body}
       <div class="foot">${c.note}</div>`;
     box.appendChild(card);
@@ -890,7 +963,7 @@ function renderInfo(){
   const approx=c.geoApprox?`<span class="tax-note">Position sur la carte approximative.</span>`:'';
   box.innerHTML=`
     <div class="card" style="max-width:560px">
-      <h3>${vfPill(c)}${c.base}</h3>
+      <h3>${vfPill(c)}${c.base} <span class="badge b-info">${holesLabel(c)}</span></h3>
       <div class="meta">${c.t} · ${c.region}</div>
       <div class="grid-block"><div class="gh">Saisons</div>${secs}</div>
       <div class="grid-block"><div class="gh">Voiturette</div><div class="dayline"><span class="dl-d">${cartLine}</span></div></div>
@@ -954,14 +1027,16 @@ document.getElementById('selDate').addEventListener('change',e=>{ST.date=e.targe
 document.getElementById('selTime').addEventListener('change',e=>{ST.time=parseFloat(e.target.value);renderComp();});
 document.getElementById('selRegion').addEventListener('change',e=>{ST.region=e.target.value;renderComp();});
 document.getElementById('selCart').addEventListener('change',e=>{ST.cart=e.target.value;renderComp();});
+document.getElementById('selHoles').addEventListener('change',e=>{ST.holes=parseInt(e.target.value,10);renderComp();});
 document.getElementById('search').addEventListener('input',e=>{ST.q=e.target.value;renderComp();});
 document.getElementById('resetBtn').addEventListener('click',()=>{
-  Object.assign(ST,{time:16,sort:"walk",q:"",region:"all",cart:"all",date:TODAY});
+  Object.assign(ST,{time:16,sort:"walk",q:"",region:"all",cart:"all",date:TODAY,holes:18});
   syncSeg('segSort',ST.sort);
   document.getElementById('selDate').value=TODAY;
   document.getElementById('selTime').value="16";
   document.getElementById('selRegion').value="all";
   document.getElementById('selCart').value="all";
+  document.getElementById('selHoles').value="18";
   document.getElementById('search').value="";
   renderComp();
 });

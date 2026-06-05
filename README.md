@@ -12,8 +12,11 @@ saison (haute, basse…), avec ou sans voiturette.
 
 ## Ce que fait l'app
 
-- **Comparateur** — tableau triable de ~30 parcours sur 25 clubs, filtrable par
-  région, voiturette, heure de départ. Le meilleur tarif marcheur est mis en avant.
+- **Comparateur** — tableau triable de ~31 parcours sur 26 clubs, filtrable par
+  région, voiturette, heure de départ et **format de parcours (18 ou 9 trous)**.
+  Le meilleur tarif marcheur est mis en avant. Un badge indique le format réel de
+  chaque parcours (18, 9, 13, 9×2, 27). En mode 9 trous, les clubs qui n'offrent
+  pas de 9 trous sont grisés.
 - **Fiches par club** — la grille tarifaire complète de chaque club (toutes les
   plages horaires, semaine et fin de semaine, par saison).
 - **Statistiques** — moyennes, min/max et classement des tarifs pour la date choisie.
@@ -35,6 +38,8 @@ dépendance à installer. Il suffit d'ouvrir le fichier dans un navigateur.
 - Les données des clubs vivent dans la constante `CLUBS` (dans la balise `<script>`).
 - Les liens de réservation, téléphones et coordonnées GPS (pour la carte) vivent dans
   la constante `CLUB_META`, juste après `CLUBS`, indexée par le nom du club.
+- Le format de parcours (`holes`) et les tarifs 9 trous (`g9`) vivent dans la constante
+  `CLUB9`, indexée par le nom du club. Un club sans `g9` n'offre pas de 9 trous.
 - `TAXF` = facteur de taxes (TPS+TVQ) appliqué aux clubs dont les prix sont hors taxes.
 - La saison et le jour-type sont déduits automatiquement de la date choisie.
 - La carte utilise [Leaflet](https://leafletjs.com/) chargé depuis un CDN — pas de clé API.

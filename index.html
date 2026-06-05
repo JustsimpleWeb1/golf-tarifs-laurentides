@@ -41,6 +41,11 @@
   nav.tabs{display:flex;gap:4px;margin:26px 0 0;border-bottom:1px solid var(--line);flex-wrap:nowrap;overflow-x:auto;position:sticky;top:0;z-index:30;background:rgba(11,31,23,.94);backdrop-filter:blur(10px);scrollbar-width:none}
   nav.tabs::-webkit-scrollbar{display:none}
   nav.tabs button{background:none;border:0;color:#9fb3a6;font-family:'Archivo';font-weight:700;font-size:.96rem;padding:14px 20px;cursor:pointer;position:relative;letter-spacing:.01em;transition:color .2s;white-space:nowrap;min-height:48px}
+  @media(max-width:560px){
+    nav.tabs{gap:0;justify-content:space-between}
+    nav.tabs button{flex:1 1 0;padding:13px 4px;font-size:.82rem;text-align:center}
+    nav.tabs button.active::after{left:6px;right:6px}
+  }
   nav.tabs button:hover{color:var(--cream)}
   nav.tabs button.active{color:var(--paper)}
   nav.tabs button.active::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:3px;background:var(--gold);border-radius:3px 3px 0 0}
@@ -59,6 +64,8 @@
   .searchrow{display:flex;gap:14px;align-items:flex-end}
   .searchrow .search-ctrl{flex:1 1 auto;min-width:0}
   .searchrow .sort-ctrl{flex:0 0 auto}
+  .searchrow .sort-ctrl .seg{min-width:300px}
+  .searchrow .sort-ctrl .seg button{padding:9px 16px}
   @media(max-width:640px){ .searchrow{flex-wrap:wrap} .searchrow .search-ctrl,.searchrow .sort-ctrl{flex:1 1 100%} }
   .ctrl{display:flex;flex-direction:column;gap:7px;min-width:0}
   .ctrl label{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:#88a094;font-weight:700}
@@ -67,8 +74,10 @@
   .seg button{flex:1 1 0;min-width:0;background:none;border:0;color:#bcccc1;font-family:'Archivo';font-weight:600;font-size:.83rem;padding:9px 6px;border-radius:7px;cursor:pointer;transition:.15s;white-space:nowrap;min-height:40px}
   .seg button:hover{color:var(--paper)}
   .seg button.on{background:var(--gold);color:var(--ink)}
-  select,input[type=search],input[type=date]{width:100%;min-width:0;background:rgba(244,239,227,.06);border:1px solid var(--line);color:var(--cream);font-family:'Archivo';font-weight:600;font-size:.9rem;padding:11px 12px;border-radius:10px;cursor:pointer;min-height:44px}
-  input[type=date]{color-scheme:dark}
+  select,input[type=search],input[type=date]{width:100%;max-width:100%;min-width:0;background:rgba(244,239,227,.06);border:1px solid var(--line);color:var(--cream);font-family:'Archivo';font-weight:600;font-size:.9rem;padding:11px 12px;border-radius:10px;cursor:pointer;min-height:44px;-webkit-appearance:none;appearance:none}
+  input[type=date]{color-scheme:dark;-webkit-appearance:none;appearance:none;overflow:hidden}
+  input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
+  input[type=date]::-webkit-calendar-picker-indicator{margin-left:0}
   select:focus,input:focus{outline:2px solid var(--gold-soft);outline-offset:1px}
   input[type=search]{cursor:text}
   /* ---------- Results bar ---------- */
@@ -185,7 +194,12 @@
     td.num{font-size:.96rem}
     .price-pill{min-width:58px;padding:4px 8px}
     .cards{grid-template-columns:1fr}
-    nav.tabs button{padding:13px 16px;font-size:.9rem}
+    /* mobile : tableau épuré — seulement Club + la colonne triée, plus de scroll horizontal */
+    .tablewrap table{min-width:0}
+    .col-extra{display:none}
+    table.sort-walk .col-cart{display:none}
+    table.sort-cart .col-walk{display:none}
+    .club-name{font-size:.95rem}
   }
 </style>
 </head>
@@ -224,16 +238,6 @@
           </select>
         </div>
         <div class="ctrl">
-          <label>Région</label>
-          <select id="selRegion">
-            <option value="all">Toutes les régions</option>
-            <option value="Basses-Laurentides">Basses-Laurentides</option>
-            <option value="Hautes-Laurentides">Hautes-Laurentides</option>
-            <option value="Laval">Laval</option>
-            <option value="Couronne nord">Couronne nord</option>
-          </select>
-        </div>
-        <div class="ctrl">
           <label>Heure de départ</label>
           <select id="selTime">
             <option value="8">Départ matin (avant 11h)</option>
@@ -258,8 +262,7 @@
           <label>Trier par</label>
           <div class="seg" id="segSort">
             <button data-sort="walk" class="on">Marcheur</button>
-            <button data-sort="cart">+ Voit.</button>
-            <button data-sort="region">Région</button>
+            <button data-sort="cart">+ Voiturette</button>
           </div>
         </div>
       </div>
@@ -273,11 +276,11 @@
         <thead>
           <tr>
             <th data-col="name">Club <span class="arrow">↕</span></th>
-            <th data-col="walk" class="num">Marcheur <span class="arrow">↕</span></th>
-            <th data-col="cart" class="num">+ Voiturette <span class="arrow">↕</span></th>
-            <th data-col="season">Saison</th>
-            <th data-col="slot">Plage applicable</th>
-            <th data-col="flags">Notes</th>
+            <th data-col="walk" class="num col-walk">Marcheur <span class="arrow">↕</span></th>
+            <th data-col="cart" class="num col-cart">+ Voiturette <span class="arrow">↕</span></th>
+            <th data-col="season" class="col-extra">Saison</th>
+            <th data-col="slot" class="col-extra">Plage applicable</th>
+            <th data-col="flags" class="col-extra">Notes</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -343,7 +346,7 @@
     <div class="legend"><span>📍 Un point par club · clique un marqueur pour le tarif et le lien de réservation. Quelques positions sont approximatives (centre du secteur).</span></div>
   </section>
   <footer>
-    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous ; tarifs 9 trous marqués ~ sont à confirmer. Construit pour Simon · Just Simple Web. <b>v12 · 5 juin 2026</b></div>
+    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous ; tarifs 9 trous marqués ~ sont à confirmer. Construit pour Simon · Just Simple Web. <b>v13 · 5 juin 2026</b></div>
   </footer>
 </div>
 <script>
@@ -737,8 +740,10 @@ function heat(v,min,max){
 function mix(a,b,k){return a.map((v,i)=>Math.round(v+(b[i]-v)*k));}
 // ----- state -----
 const TODAY = new Date().toISOString().slice(0,10);
-const ST={time:16,sort:"walk",q:"",region:"all",date:TODAY,holes:18};
-const STS={time:16,date:TODAY};
+// date + heure partagées entre Comparateur et Statistiques
+const SHARED={date:TODAY,time:16};
+const ST={sort:"walk",q:"",holes:18, get date(){return SHARED.date}, set date(v){SHARED.date=v}, get time(){return SHARED.time}, set time(v){SHARED.time=v}};
+const STS={get date(){return SHARED.date}, set date(v){SHARED.date=v}, get time(){return SHARED.time}, set time(v){SHARED.time=v}};
 const STI={club:""};
 const timeLabels={8:"matin",11:"à partir de 11h",13:"à partir de 13h",14:"à partir de 14h",15:"à partir de 15h",16:"à partir de 16h",17.5:"soirée"};
 // ====== COMPARATEUR ======
@@ -757,7 +762,6 @@ function renderComp(){
     rows.push({c,g,slot,w,ct,nine});
   }
   let vis=rows.filter(r=>{
-    if(ST.region!=='all' && r.c.region!==ST.region) return false;
     if(ST.q){ const s=(r.c.n+" "+r.c.t+" "+r.c.region).toLowerCase(); if(!s.includes(ST.q.toLowerCase())) return false; }
     return true;
   });
@@ -769,15 +773,12 @@ function renderComp(){
   const wMin=Math.min(...ws),wMax=Math.max(...ws),cMin=Math.min(...cs),cMax=Math.max(...cs);
   const key=ST.sort;
   live.sort((a,b)=>{
-    if(key==="region"){
-      if(a.c.region!==b.c.region) return a.c.region.localeCompare(b.c.region,'fr');
-      const av=a.w??1e9, bv=b.w??1e9; return av-bv;
-    }
     const av=(key==="walk"?a.w:a.ct), bv=(key==="walk"?b.w:b.ct);
     if(av==null&&bv==null)return 0; if(av==null)return 1; if(bv==null)return -1;
     return av-bv;
   });
   const bestWalk = ws.length?Math.min(...ws):null;
+  const tbl=document.querySelector('.tablewrap table'); if(tbl){tbl.classList.toggle('sort-walk',key==='walk');tbl.classList.toggle('sort-cart',key==='cart');}
   const tb=document.getElementById('tbody'); tb.innerHTML="";
   for(const r of live){
     const isBest = r.w!=null && r.w===bestWalk && key==="walk";
@@ -795,11 +796,11 @@ function renderComp(){
     const seasonCell = r.nine ? `<span class="s-pill s-uni">9 trous</span>` : `<span class="s-pill ${r.g.cls}">${r.g.label}</span>`;
     tr.innerHTML=`
       <td><div class="club-name">${isBest?'<span class="crown">♦</span>':''}${tofc}${r.c.n} ${holeBadge}</div><div class="town">${r.c.t} · ${r.c.region}</div></td>
-      <td class="num">${walkCell}</td>
-      <td class="num">${cartCell}</td>
-      <td>${seasonCell}</td>
-      <td><span class="slotlbl">${r.slot?r.slot.l:'—'}</span></td>
-      <td><div class="badges">${badges||'<span class="badge b-info">—</span>'}</div></td>`;
+      <td class="num col-walk">${walkCell}</td>
+      <td class="num col-cart">${cartCell}</td>
+      <td class="col-extra">${seasonCell}</td>
+      <td class="col-extra"><span class="slotlbl">${r.slot?r.slot.l:'—'}</span></td>
+      <td class="col-extra"><div class="badges">${badges||'<span class="badge b-info">—</span>'}</div></td>`;
     tb.appendChild(tr);
   }
   for(const r of no9Rows){
@@ -1019,17 +1020,22 @@ const BASES=[...new Set(CLUBS.map(c=>c.base))].sort((a,b)=>a.localeCompare(b,'fr
 document.getElementById('selClubI').innerHTML=BASES.map(b=>`<option value="${b}">${b}</option>`).join('');
 STI.club=BASES[0];
 seg('segSort','sort','sort',ST,renderComp);
-document.getElementById('selDate').addEventListener('change',e=>{ST.date=e.target.value||TODAY;renderComp();});
-document.getElementById('selTime').addEventListener('change',e=>{ST.time=parseFloat(e.target.value);renderComp();});
-document.getElementById('selRegion').addEventListener('change',e=>{ST.region=e.target.value;renderComp();});
+// pousse la date/heure partagées dans les inputs des deux onglets
+function syncDateTimeInputs(){
+  document.getElementById('selDate').value=SHARED.date;
+  document.getElementById('selDateS').value=SHARED.date;
+  document.getElementById('selTime').value=String(SHARED.time);
+  document.getElementById('selTimeS').value=String(SHARED.time);
+}
+document.getElementById('selDate').addEventListener('change',e=>{SHARED.date=e.target.value||TODAY;syncDateTimeInputs();renderComp();});
+document.getElementById('selTime').addEventListener('change',e=>{SHARED.time=parseFloat(e.target.value);syncDateTimeInputs();renderComp();});
 document.getElementById('selHoles').addEventListener('change',e=>{ST.holes=parseInt(e.target.value,10);renderComp();});
 document.getElementById('search').addEventListener('input',e=>{ST.q=e.target.value;renderComp();});
 document.getElementById('resetBtn').addEventListener('click',()=>{
-  Object.assign(ST,{time:16,sort:"walk",q:"",region:"all",date:TODAY,holes:18});
+  SHARED.date=TODAY; SHARED.time=16;
+  Object.assign(ST,{sort:"walk",q:"",holes:18});
   syncSeg('segSort',ST.sort);
-  document.getElementById('selDate').value=TODAY;
-  document.getElementById('selTime').value="16";
-  document.getElementById('selRegion').value="all";
+  syncDateTimeInputs();
   document.getElementById('selHoles').value="18";
   document.getElementById('search').value="";
   renderComp();
@@ -1039,11 +1045,13 @@ document.querySelectorAll('thead th[data-col]').forEach(th=>{
     document.querySelectorAll('#segSort button').forEach(b=>b.classList.toggle('on',b.dataset.sort===col)); renderComp();}});
 });
 document.getElementById('selClubI').addEventListener('change',e=>{STI.club=e.target.value;renderInfo();});
-document.getElementById('selDateS').addEventListener('change',e=>{STS.date=e.target.value||TODAY;renderStats();});
-document.getElementById('selTimeS').addEventListener('change',e=>{STS.time=parseFloat(e.target.value);renderStats();});
+document.getElementById('selDateS').addEventListener('change',e=>{SHARED.date=e.target.value||TODAY;syncDateTimeInputs();renderStats();});
+document.getElementById('selTimeS').addEventListener('change',e=>{SHARED.time=parseFloat(e.target.value);syncDateTimeInputs();renderStats();});
 function goToTab(tab){
   document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));
   document.querySelectorAll('section.panel').forEach(x=>x.classList.toggle('active',x.id===tab));
+  if(tab==='comp'||tab==='stats') syncDateTimeInputs(); // reflète la date/heure partagée
+  if(tab==='comp')renderComp();
   if(tab==='stats')renderStats();
   if(tab==='info')renderInfo();
   if(tab==='carte')showMap();

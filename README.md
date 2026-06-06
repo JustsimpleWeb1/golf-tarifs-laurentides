@@ -30,31 +30,36 @@ Chaque tarif porte une mention de vérification (✓ vérifié · ~ dynamique ·
 
 ## Comment ça marche techniquement
 
-C'est un **site statique d'un seul fichier** : tout (design, données, logique) est
-dans [`index.html`](index.html). Aucun serveur, aucune base de données, aucune
-dépendance à installer. Il suffit d'ouvrir le fichier dans un navigateur.
+C'est un **site statique** : l'interface et la logique sont dans [`index.html`](index.html),
+et **toutes les données des golfs sont dans [`golfs.json`](golfs.json)**. Aucun serveur
+applicatif, aucune base de données, aucune dépendance à installer. L'app charge `golfs.json`
+au démarrage (via `fetch`). Cette séparation prépare un éventuel CMS futur : il suffira
+qu'il produise ce même `golfs.json`.
 
-- Les données des clubs vivent dans la constante `CLUBS` (dans la balise `<script>`).
-- Les liens de réservation, téléphones et coordonnées GPS (pour la carte) vivent dans
-  la constante `CLUB_META`, juste après `CLUBS`, indexée par le nom du club.
-- Le format de parcours (`holes`) et les tarifs 9 trous (`g9`) vivent dans la constante
-  `CLUB9`, indexée par le nom du club. Un club sans `g9` n'offre pas de 9 trous.
-- `TAXF` = facteur de taxes (TPS+TVQ) appliqué aux clubs dont les prix sont hors taxes.
-- La saison et le jour-type sont déduits automatiquement de la date choisie.
-- La carte utilise [Leaflet](https://leafletjs.com/) chargé depuis un CDN — pas de clé API.
+Structure de `golfs.json` :
+- `clubs` — liste des parcours. Chaque club : `n` (nom), `t` (ville), `tax`, grilles
+  `sem`/`ven`/`fds` (slots `{s,l,w,c,wc}`), `seasons`/`lo` (saisons), `cartIncl`, `badges`, `note`.
+- `club_meta` — par nom de club : `tel`, `url` (réservation), `lat`, `lng` (carte).
+- `club9` — par nom de club : `holes` (format), `g9` (grille 9 trous). Pas de `g9` = pas de 9 trous.
 
-## Mettre à jour les prix
+Côté code : `TAXF` = facteur de taxes (TPS+TVQ) ; la saison et le jour-type se déduisent de
+la date ; la carte utilise [Leaflet](https://leafletjs.com/) via CDN (pas de clé API).
 
-1. Ouvre `index.html` dans un éditeur.
-2. Trouve le club dans la liste `CLUBS` (cherche son nom).
-3. Modifie les valeurs `w` (prix marcheur) et `c` (supplément voiturette/pers.).
-4. Pour un lien de réservation, un téléphone ou une position de carte : modifie
-   l'entrée du club dans `CLUB_META`.
+## Mettre à jour les prix / ajouter un terrain
+
+1. Ouvre **`golfs.json`** (et non `index.html`).
+2. Pour un prix : trouve le club dans `clubs`, modifie `w` (marcheur) / `c` (supplément voiturette).
+3. Pour un lien, un téléphone ou une position carte : modifie son entrée dans `club_meta`.
+4. Pour ajouter un terrain : ajoute une entrée dans `clubs` (+ `club_meta` et `club9` au besoin).
 5. Sauvegarde, puis `git commit` + `git push` — GitHub Pages se met à jour seul.
+
+> Remarque : comme les données sont dans un fichier séparé, l'app doit être servie par un
+> serveur (GitHub Pages le fait ; en local utilise `python3 -m http.server`). Double-cliquer
+> `index.html` ne suffit plus.
 
 ## Lancer en local
 
-Double-clique simplement sur `index.html`, ou :
+L'app charge `golfs.json`, il faut donc un petit serveur (le double-clic ne marche plus) :
 
 ```bash
 # avec Python (déjà installé sur macOS)
@@ -72,7 +77,8 @@ Chaque `git push` sur `main` met le site à jour automatiquement.
 
 ```
 .
-├── index.html        # l'application complète (HTML + CSS + JS + données)
+├── index.html        # l'application (HTML + CSS + JS) — charge golfs.json
+├── golfs.json        # TOUTES les données des golfs (à éditer pour mettre à jour)
 ├── README.md         # ce fichier
 └── archive/          # anciennes données de référence (non utilisées par l'app)
     └── golfs-data.json

@@ -347,268 +347,16 @@
     <div class="legend"><span>📍 Un point par club · clique un marqueur pour le tarif et le lien vers sa fiche.</span></div>
   </section>
   <footer>
-    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous. Construit pour Simon · Just Simple Web. <b>v16 · 5 juin 2026</b></div>
+    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous. Construit pour Simon · Just Simple Web. <b>v17 · 5 juin 2026</b></div>
   </footer>
 </div>
 <script>
 const TAXF = 1.14975;
-// slot: {s:start(24h decimal), l:label, w:walk price | null(oblig), c:cart add/pers, wc:withCart override(optional)}
-// seasons: [{from:"MM-DD",to:"MM-DD",grille:"hi"|"lo",label:"…"}] — résout la grille selon la date
-const CLUBS = [
- {n:"Club de golf Bel-Air",t:"Mirabel",tax:false,
-  sem:[{s:0,l:"Avant 14h",w:43.49,c:19.14},{s:14,l:"Après 14h",w:35.66,c:19.14},{s:16,l:"Après 16h",w:28.70,c:19.14}],
-  ven:"sem",
-  fds:[{s:0,l:"Avant 14h",w:49.58,c:19.14},{s:14,l:"Après 14h",w:40.01,c:19.14},{s:16,l:"Après 16h",w:32.18,c:19.14}],
-  badges:[], note:"Vendredi au tarif semaine. Chariot manuel 6,09 $. Le moins cher du répertoire. Solo (1 pers) 28,70 $."},
- {n:"Golf Sainte-Agathe",t:"Sainte-Agathe",tax:false,
-  sem:[{s:0,l:"8h–14h",w:40.01,c:21.74},{s:14,l:"Après 14h",w:33.06,c:21.74}],
-  ven:"sem",
-  fds:[{s:0,l:"8h–14h",w:46.96,c:21.74},{s:14,l:"Après 14h",w:35.67,c:21.74}],
-  badges:[], note:"Parcours 9 trous joué deux fois. Voiturette 21,74 $ (solo). Ouverture 14 mai 2026."},
- {n:"Club de golf St-Janvier",t:"Mirabel",tax:true,
-  sem:[{s:0,l:"Matin",w:47,c:20},{s:14,l:"Après 14h",w:35,c:20},{s:16,l:"Après 16h",w:30,c:20}],
-  ven:"sem",
-  fds:[{s:0,l:"Matin",w:52,c:20},{s:14,l:"Après 14h",w:40,c:20},{s:16,l:"Après 16h",w:30,c:20}],
-  badges:[], note:"« TPS et TVQ incluses » (confirmé). Vendredi au tarif semaine. Après 16h = tarif 9 trous. Voiturette 20 $/pers, chariot 4 $."},
- {n:"Club de golf St-Jérôme",t:"St-Jérôme",tax:true,
-  sem:[{s:0,l:"Matin",w:56,c:19},{s:14,l:"Après 14h",w:47,c:19},{s:16,l:"Après 16h",w:35,c:19}],
-  ven:[{s:0,l:"Matin",w:61,c:19},{s:14,l:"Après 14h",w:52,c:19},{s:16,l:"Après 16h",w:35,c:19}],
-  fds:[{s:0,l:"Matin",w:66,c:19},{s:14,l:"Après 14h",w:59,c:19},{s:16,l:"Après 16h",w:35,c:19}],
-  badges:[], note:"Taxes incluses (confirmé par capture). Vendredi a son propre tarif. Après 16h = tarif 9 trous. Voiturette 19 $/pers."},
- {n:"Club de golf Mirabel — Campagnard",t:"Mirabel",tax:false,
-  sem:[{s:0,l:"Régulier",w:43,c:21.75},{s:14,l:"Après 14h",w:34.50,c:21.75}],
-  ven:"sem",
-  fds:[{s:0,l:"Régulier",w:48.50,c:21.75},{s:14,l:"Après 14h",w:39,c:21.75}],
-  badges:[{c:"b-warn",x:"Pas de voit. après 15h"}], note:"Prix affiché (taxes en sus). Parcours le plus accessible. Aucune voiturette après 15h sauf membre/ligue. L'autre parcours est le Boisé."},
- {n:"Club de golf Mirabel — Boisé",t:"Mirabel",tax:false,
-  sem:[{s:0,l:"Régulier",w:48,c:21.75},{s:14,l:"Après 14h",w:39.50,c:21.75}],
-  ven:"sem",
-  fds:[{s:0,l:"Régulier",w:55,c:21.75},{s:14,l:"Après 14h",w:44,c:21.75}],
-  badges:[{c:"b-warn",x:"Pas de voit. après 15h"}], note:"Prix affiché (taxes en sus). Parcours signature, plus exigeant. Aucune voiturette après 15h sauf membre/ligue. L'autre parcours est le Campagnard."},
- {n:"Club de golf Le Diamant",t:"Mirabel",tax:false,
-  sem:[{s:0,l:"Golf",w:70,c:25.25},{s:14,l:"Après 14h",w:52,c:25.25},{s:15.5,l:"Après 15h30",w:41.50,c:25.25}],
-  ven:"sem", fds:"sem",
-  badges:[], note:"Tarif 7 jours identique. Voiturette 25,25 $/pers. Chariot manuel 6 $. Ouvert 27 avril–31 octobre."},
- {n:"Golf 4D — Parcours 1",t:"Mirabel",tax:false,
-  sem:[{s:0,l:"Avant 13h",w:65,c:25},{s:13,l:"13h–15h",w:60,c:25},{s:15,l:"Après 15h",w:50,c:25}],
-  ven:"fds",
-  fds:[{s:0,l:"Avant 13h",w:75,c:25},{s:13,l:"13h–15h",w:70,c:25},{s:15,l:"Après 15h",w:60,c:25}],
-  badges:[{c:"b-warn",x:"Voit. selon terrain"}], note:"Promo en vigueur : 60 $ sem / 65 $ FDS sur les deux parcours. Demi-voiturette 25 $."},
- {n:"Golf 4D — Parcours 2",t:"Mirabel",tax:false,
-  sem:[{s:0,l:"Avant 13h",w:75,c:25},{s:13,l:"13h–15h",w:70,c:25},{s:15,l:"Après 15h",w:60,c:25}],
-  ven:"fds",
-  fds:[{s:0,l:"Avant 13h",w:80,c:25},{s:13,l:"13h–15h",w:75,c:25},{s:15,l:"Après 15h",w:65,c:25}],
-  badges:[{c:"b-warn",x:"Voit. selon terrain"}], note:"Parcours plus difficile que le P1. Promo en vigueur : 60 $ sem / 65 $ FDS."},
- {n:"Golf Le Sélect",t:"Mirabel",tax:true,
-  seasons:[{to:"06-19",grille:"lo",label:"Début saison"},{from:"06-20",grille:"hi",label:"Haute"}],
-  sem:[{s:0,l:"Avant 8h",w:50,c:25},{s:8,l:"8h–11h",w:57,c:25},{s:11,l:"11h–14h",w:50,c:25},{s:14,l:"14h–16h",w:45,c:25},{s:16,l:"Après 16h",w:35,c:25}],
-  ven:"fds",
-  fds:[{s:0,l:"Avant 8h",w:60,c:25},{s:8,l:"8h–11h",w:67,c:25},{s:11,l:"11h–14h",w:60,c:25},{s:14,l:"14h–16h",w:45,c:25},{s:16,l:"Après 16h",w:35,c:25}],
-  lo:{
-   sem:[{s:0,l:"6h–11h",w:48,c:25},{s:11,l:"11h–16h",w:40,c:25},{s:16,l:"Après 16h",w:35,c:25}],
-   ven:"fds",
-   fds:[{s:0,l:"6h–11h",w:58,c:25},{s:11,l:"11h–16h",w:50,c:25},{s:16,l:"Après 16h",w:35,c:25}]
-  },
-  badges:[], note:"Prix taxes incluses (montants ronds tout-inclus, confirmé « +tx= »). Date de bascule en haute saison « déterminée plus tard » par le club (estimée ~20 juin). Plages début de saison : 6h-11h / 11h-16h / 16h+. Voiturette solo 30 $, demi 25 $."},
- {n:"Club de golf Glendale — Ancestral",t:"Mirabel",tax:false,
-  sem:[{s:0,l:"Jour",w:54,c:25.50},{s:14,l:"14h–15h30",w:48,c:25.50},{s:15.5,l:"Après 15h30",w:37,c:25.50}],
-  ven:"fds",
-  fds:[{s:0,l:"Jour",w:65,c:25.50},{s:14,l:"14h–15h30",w:50,c:25.50},{s:15.5,l:"Après 15h30",w:39,c:25.50}],
-  badges:[{c:"b-warn",x:"Grille fin de saison"}], note:"Grille « Prix fin de saison 2026 » (seule publiée — aucune grille été en ligne). Vendredi = FDS. Demi-voiturette 25,50 $/pers."},
- {n:"Club de golf Glendale — Élite",t:"Mirabel",tax:false,
-  sem:[{s:0,l:"Jour",w:68,c:25.50},{s:13,l:"13h–16h",w:58,c:25.50},{s:16,l:"Après 16h",w:51.50,c:25.50}],
-  ven:"fds",
-  fds:[{s:0,l:"Jour",w:73.50,c:25.50},{s:13,l:"13h–16h",w:66.50,c:25.50},{s:16,l:"Après 16h",w:52.50,c:25.50}],
-  badges:[{c:"b-warn",x:"Grille fin de saison"}], note:"Parcours signature, plus exigeant. Grille « fin de saison » affichée. L'autre parcours est l'Ancestral."},
- {n:"Golf Le Grand Duc",t:"Sainte-Sophie",tax:true,
-  seasons:[{to:"06-06",grille:"lo",label:"Basse"},{from:"06-07",to:"09-22",grille:"hi",label:"Haute"},{from:"09-23",grille:"lo",label:"Basse"}],
-  sem:[{s:0,l:"Avant 8h",w:48,c:22},{s:8,l:"Avant 11h",w:55,c:22},{s:11,l:"11h–14h",w:53,c:22},{s:14,l:"14h–16h",w:38,c:22},{s:16,l:"Après 16h",w:28,c:22}],
-  ven:"fds",
-  fds:[{s:0,l:"Avant 11h",w:68,c:22},{s:11,l:"11h–14h",w:63,c:22},{s:14,l:"14h–16h",w:48,c:22},{s:16,l:"Après 16h",w:33,c:22}],
-  lo:{
-   sem:[{s:0,l:"Avant 8h",w:43,c:22},{s:8,l:"Avant 11h",w:53,c:22},{s:11,l:"11h–14h",w:48,c:22},{s:14,l:"14h–16h",w:38,c:22},{s:16,l:"Après 16h",w:25,c:22}],
-   ven:"fds",
-   fds:[{s:0,l:"Avant 11h",w:63,c:22},{s:11,l:"11h–14h",w:58,c:22},{s:14,l:"14h–16h",w:43,c:22},{s:16,l:"Après 16h",w:31,c:22}]
-  },
-  badges:[], note:"Taxes incluses (confirmé). Tarif régulier (haute) du 7 juin au 22 sept ; rabais (basse) avant le 7 juin et après le 22 sept. Voiturette 22 $/pers."},
- {n:"Club de Golf Lorraine",t:"Lorraine",tax:true,
-  sem:[{s:0,l:"Avant 8h (lève-tôt)",w:37,c:23},{s:8,l:"Droit de jeu",w:62,c:23},{s:13,l:"Après 13h",w:52,c:23},{s:15,l:"Après 15h",w:43,c:23}],
-  ven:"sem",
-  fds:[{s:0,l:"Matin",w:75,c:23},{s:11,l:"Après 11h",w:63,c:23},{s:13,l:"Après 13h",w:56,c:23}],
-  badges:[{c:"b-warn",x:"Vendredi à confirmer"}], note:"Taxes incluses (confirmé). Vendredi présumé au tarif semaine (non explicité par le club). Voiturette 46 $/2 (23/pers) ou 30 $ solo."},
- {n:"Centre de Golf Le Versant — V1 & 2",t:"Terrebonne",tax:false,
-  seasons:[{to:"05-17",grille:"lo",label:"Début saison"},{from:"05-18",to:"10-13",grille:"hi",label:"Haute"},{from:"10-14",grille:"hi",label:"Fin saison"}],
-  sem:[{s:0,l:"Ouv.–13h",w:65,c:25},{s:13,l:"13h–15h",w:55,c:25},{s:15,l:"Après 15h",w:45,c:25}],
-  ven:"fds",
-  fds:[{s:0,l:"Ouv.–14h",w:75,c:25},{s:14,l:"14h–16h",w:65,c:25},{s:16,l:"Après 16h",w:55,c:25}],
-  lo:{
-   sem:[{s:0,l:"Ouv.–14h",w:55,c:25},{s:14,l:"Après 14h",w:50,c:25}],
-   ven:"fds",
-   fds:[{s:0,l:"Ouv.–14h",w:65,c:25},{s:14,l:"Après 14h",w:60,c:25}]
-  },
-  badges:[], note:"Parcours V1 et V2 (tarifs identiques). En saison 18 mai–13 oct. Début de saison 24 avr–17 mai. Voiturette GPS 25 $. L'Exécutif est moins cher."},
- {n:"Centre de Golf Le Versant — Exécutif",t:"Terrebonne",tax:false,
-  seasons:[{to:"05-17",grille:"lo",label:"Début saison"},{from:"05-18",to:"10-13",grille:"hi",label:"Haute"},{from:"10-14",grille:"hi",label:"Fin saison"}],
-  sem:[{s:0,l:"Jour (18t)",w:55,c:25}],
-  ven:"fds",
-  fds:[{s:0,l:"Jour (18t)",w:60,c:25}],
-  lo:{ sem:[{s:0,l:"Jour (18t)",w:45,c:25}], ven:"fds", fds:[{s:0,l:"Jour (18t)",w:50,c:25}] },
-  badges:[], note:"Parcours exécutif (plus court), tarif unique en journée. En saison dès 18 mai. Version 9 trous encore moins chère."},
- {n:"Golf Champêtre",t:"Sainte-Anne-des-Plaines",tax:false,
-  sem:[{s:0,l:"Avant 13h",w:86,c:26},{s:13,l:"13h–14h",w:77,c:26},{s:14,l:"Après 14h",w:69,c:26}],
-  ven:"fds",
-  fds:[{s:0,l:"Avant 13h",w:96,c:26},{s:13,l:"13h–14h",w:86,c:26},{s:14,l:"Après 14h",w:77,c:26}],
-  badges:[], note:"Taxes en sus (confirmé). Balles de pratique + chariot 3 roues inclus. Vendredi = FDS. Voiturette 26 $/pers. Semi-privé haut de gamme."},
- {n:"Club de golf Lachute — Thompson",t:"Lachute",tax:false,
-  sem:[{s:0,l:"Journalier",w:75,c:21.75},{s:15,l:"Dès 15h",w:45,c:21.75}],
-  ven:"sem", fds:"sem",
-  badges:[], note:"36 trous (l'autre parcours est le Watson). 7 jours identiques. Voiturette 21,75 $/golfeur. Chariot 8,70 $."},
- {n:"Club de golf Lachute — Watson",t:"Lachute",tax:false,
-  sem:[{s:0,l:"Journalier",w:65.22,c:21.75},{s:15,l:"Dès 15h",w:41.31,c:21.75}],
-  ven:"sem", fds:"sem",
-  badges:[], note:"36 trous (l'autre parcours est le Thompson). 2e ronde 26,09 $. Voit. 9 trous 14,99 $. Chariot 8,70 $."},
- {n:"Golf Ste-Rose",t:"Laval",tax:false,
-  sem:[{s:0,l:"Régulier",w:65,c:22},{s:14,l:"Après 14h",w:55,c:22},{s:16,l:"Après 16h",w:45,c:22}],
-  ven:"sem", fds:"sem",
-  badges:[], note:"Taxes en sus (confirmé). Tarif 7 jours identique. Voiturette 22 $. Dernier départ avec voiturette : 16h30."},
- {n:"Club de golf Piedmont",t:"Piedmont",tax:false,
-  sem:[{s:0,l:"Avant 13h",w:60,c:25},{s:13,l:"Après 13h",w:45,c:25}],
-  ven:"fds",
-  fds:[{s:0,l:"Avant 13h",w:67,c:25},{s:13,l:"Après 13h",w:52,c:25}],
-  badges:[], note:"Taxes en sus (confirmé). Voiturette vendue en forfait combiné (supplément ~25 $, pas à part). Vendredi = FDS. Chariot 5 $."},
- {n:"Golf La Vallée de Sainte-Adèle",t:"Sainte-Adèle",tax:false,
-  seasons:[{to:"05-31",grille:"lo",label:"Basse"},{from:"06-01",to:"09-12",grille:"hi",label:"Haute"},{from:"09-13",grille:"lo",label:"Basse"}],
-  sem:[{s:0,l:"Avant 13h",w:62,c:24},{s:13,l:"Après 13h",w:52,c:24},{s:15,l:"Après 15h",w:32,c:14}],
-  ven:"sem",
-  fds:[{s:0,l:"Avant 13h",w:66,c:24},{s:13,l:"Après 13h",w:56,c:24},{s:15,l:"Après 15h",w:43,c:14}],
-  lo:{ sem:[{s:0,l:"Avant 13h",w:52,c:24},{s:13,l:"Après 13h",w:46,c:24}], ven:"sem", fds:"sem" },
-  badges:[{c:"b-warn",x:"Taxes non précisées"}], note:"Haute saison 1 juin–12 sept. Basse (≤ 31 mai et après 12 sept) : 52 $ / après 13h 46 $, tous les jours. Vendredi = semaine. Voiturette 24 $ (14 $ après 15h). Le site n'indique pas le statut des taxes."},
- {n:"Golf Le Chantecler",t:"Sainte-Adèle",tax:false,cartIncl:true,
-  sem:[{s:0,l:"Jour",w:53,c:0},{s:14,l:"Après 14h",w:31.99,c:0}],
-  ven:"fds",
-  fds:[{s:0,l:"Jour",w:59,c:0},{s:14,l:"Après 14h",w:34.99,c:0}],
-  badges:[{c:"b-incl",x:"Voiturette incluse"}], note:"« Tous nos tarifs incluent la voiturette — le prix demeure le même pour le marcheur » (confirmé). Taxes en sus. Vendredi = FDS. Ouverture 15 mai 2026."},
- {n:"Club de Golf Val-Morin",t:"Val-Morin",tax:false,
-  sem:[{s:0,l:"Avant 15h",w:95,c:25},{s:15,l:"Après 15h",w:60,c:25}],
-  ven:[{s:0,l:"Avant 16h",w:95,c:25},{s:16,l:"Après 16h",w:60,c:25}],
-  fds:[{s:0,l:"Avant 15h",w:95,c:25},{s:15,l:"Après 15h",w:60,c:25}],
-  badges:[], note:"Taxes en sus (confirmé). Balles de pratique + chariot à main inclus. Voiturette électrique 25 $. Bascule twilight à 16h le vendredi."},
- {n:"Club de golf Mont-Gabriel",t:"Sainte-Adèle",tax:false,cartIncl:true,
-  seasons:[{to:"06-19",grille:"lo",label:"Basse"},{from:"06-20",to:"09-11",grille:"hi",label:"Haute"},{from:"09-12",grille:"lo",label:"Basse"}],
-  sem:[{s:0,l:"6h–8h",w:69,c:0},{s:8,l:"8h–14h",w:80,c:0},{s:14,l:"14h–17h30",w:69,c:0}],
-  ven:"sem",
-  fds:[{s:0,l:"6h–8h",w:79,c:0},{s:8,l:"8h–14h",w:89,c:0},{s:14,l:"14h–17h30",w:79,c:0}],
-  lo:{
-   sem:[{s:0,l:"6h–8h",w:64,c:0},{s:8,l:"8h–14h",w:76,c:0},{s:14,l:"14h–17h30",w:64,c:0}],
-   ven:"sem",
-   fds:[{s:0,l:"6h–8h",w:73,c:0},{s:8,l:"8h–14h",w:85,c:0},{s:14,l:"14h–17h30",w:73,c:0}]
-  },
-  badges:[{c:"b-oblig",x:"Voit. obligatoire (incluse)"}], note:"Voiturette partagée incluse (confirmé par capture). Taxes en sus. Vendredi au tarif semaine. Haute saison 20 juin–11 sept."},
- {n:"Golf Royal Laurentien",t:"Mont-Blanc",tax:false,
-  seasons:[{to:"06-18",grille:"lo",label:"Basse (print.)"},{from:"06-19",to:"09-20",grille:"hi",label:"Haute"},{from:"09-21",grille:"lo",label:"Basse (aut.)"}],
-  sem:[{s:0,l:"8h–13h30",w:79,c:20},{s:13.52,l:"13h31–15h",w:71,c:20},{s:15,l:"15h–17h",w:51,c:20},{s:17,l:"Après 17h",w:33,c:20}],
-  ven:"fds",
-  fds:[{s:0,l:"8h–13h30",w:null,c:20,wc:114},{s:13.52,l:"13h31–15h",w:null,c:20,wc:104},{s:15,l:"15h–17h",w:65,c:20,wc:85},{s:17,l:"Après 17h",w:33,c:20,wc:53}],
-  lo:{
-   sem:[{s:0,l:"8h–13h30",w:69,c:20},{s:13.52,l:"13h31–15h",w:62,c:20},{s:15,l:"15h–17h",w:49,c:20},{s:17,l:"Après 17h",w:30,c:20}],
-   ven:"fds",
-   fds:[{s:0,l:"8h–13h30",w:null,c:20,wc:99},{s:13.52,l:"13h31–15h",w:null,c:20,wc:89},{s:15,l:"15h–17h",w:61,c:20,wc:81},{s:17,l:"Après 17h",w:30,c:20,wc:45}]
-  },
-  badges:[{c:"b-oblig",x:"Voit. oblig. FDS+fériés avant 15h"}], note:"Taxes en sus (confirmé). 3 saisons : haute 19 juin–20 sept (twilight 33 $) ; printemps ≤18 juin (twilight après 17h = 30 $) ; automne ≥21 sept (twilight après 16h = 30 $). Voiturette obligatoire ven-dim ET fériés avant 15h. Top 20 au Québec."},
- {n:"Club de golf St-Donat",t:"St-Donat",tax:false,vf:"dyn",
-  sem:[{s:0,l:"Journalier (repère)",w:50,c:20}],
-  ven:"fds",
-  fds:[{s:0,l:"Journalier (repère)",w:58,c:20}],
-  badges:[{c:"b-info",x:"Tarif dynamique (Chronogolf)"},{c:"b-warn",x:"Non confirmé"}], note:"Tarif journalier dynamique en temps réel sur Chronogolf — non publié en grille fixe. Repère via forfait 10 parties : ≈ 50,40 $ sem / 57,60 $ FDS (avant taxes)."},
- {n:"Golf Arundel",t:"Arundel",tax:false,
-  seasons:[{to:"05-30",grille:"lo",label:"Basse"},{from:"05-31",to:"09-29",grille:"hi",label:"Haute"},{from:"09-30",grille:"lo",label:"Basse"}],
-  sem:[{s:0,l:"Avant 14h",w:64,c:23},{s:14,l:"Après 14h",w:58,c:23},{s:16,l:"Après 16h",w:26,c:14}],
-  ven:"fds",
-  fds:[{s:0,l:"Avant 14h",w:71,c:23},{s:14,l:"Après 14h",w:65,c:23},{s:16,l:"Après 16h",w:28,c:14}],
-  lo:{
-   sem:[{s:0,l:"Avant 14h",w:55,c:23},{s:14,l:"Après 14h",w:51,c:23},{s:16,l:"Après 16h",w:24,c:14}],
-   ven:"fds",
-   fds:[{s:0,l:"Avant 14h",w:64,c:23},{s:14,l:"Après 14h",w:61,c:23},{s:16,l:"Après 16h",w:25,c:14}]
-  },
-  badges:[], note:"Taxes en sus. Haute saison 31 mai–29 sept. Basse (avant 31 mai / après 29 sept) ~9 $ moins cher. Voiturette avant 16h 23 $, après 16h 14 $."},
- {n:"Golf Le Griffon des Sources",t:"Mirabel",tax:false,
-  sem:[{s:0,l:"À pied",w:88,c:0},{s:16,l:"Après 16h (voit. incl.)",w:75,c:0}],
-  ven:"fds",
-  fds:[{s:0,l:"À pied",w:98.75,c:0},{s:16,l:"Après 16h (voit. incl.)",w:75,c:0}],
-  badges:[{c:"b-warn",x:"Aucun rabais marcheur"}], note:"Mirabel (Basses-Laurentides). Taxes EN SUS (confirmé : « les tarifs n'incluent pas les taxes »). Journalier à pied ; après 16h voiturette incluse 75 $. ½ voiturette 23 $."},
- {n:"Club de Golf Tremblant — Le Diable",t:"Mont-Tremblant",tax:false,cartIncl:true,dynamic:true,
-  sem:[{s:0,l:"Dès (dynamique)",w:59,c:0}],
-  ven:"sem", fds:"sem",
-  badges:[{c:"b-incl",x:"Voiturette incluse"},{c:"b-info",x:"Tarif dynamique"}], note:"Tarification dynamique, voiturette incluse (confirmé le 5 juin 2026). Le Diable 59–155 $ ; Le Géant 89–115 $. Twilight Le Diable dès 59 $ (après 17h). Redevance + taxes en sus. Saison 8 mai–18 oct."},
- {n:"Club de Golf Terrebonne",t:"Terrebonne",tax:true,
-  sem:[{s:0,l:"Jour",w:64,c:25},{s:12.5,l:"12h30–15h",w:60,c:25},{s:15,l:"Après 15h",w:45,c:25}],
-  ven:[{s:0,l:"Jour",w:68,c:25},{s:12.5,l:"12h30–15h",w:64,c:25},{s:15,l:"Après 15h",w:50,c:25}],
-  fds:[{s:0,l:"Jour",w:76,c:25},{s:12.5,l:"12h30–15h",w:64,c:25},{s:15,l:"Après 15h",w:50,c:25}],
-  badges:[], note:"27 trous. Taxes INCLUSES (grille officielle 2026, vérifiée le 5 juin 2026). Vendredi a son propre tarif. Voiturette 25 $/pers (18t). Chariot à main 12 $."}
-];
-// ----- métadonnées par club (lien réservation, téléphone, coordonnées) -----
-// Mappé par c.base. Vérifié sur sites officiels le 5 juin 2026 (URLs testées 200 OK).
-// geoApprox:true = coordonnées dérivées de l'adresse/ville, à affiner si besoin.
-const CLUB_META={
- "Club de golf Bel-Air":{tel:"450 258-4444",url:"https://www.golfbelair.com/tarifs/",lat:45.6134,lng:-74.0652},
- "Golf Sainte-Agathe":{tel:"819 326-3022",url:"https://www.golfsainteagathe.com/fr/rates",lat:45.9897,lng:-74.0667},
- "Club de golf St-Janvier":{tel:"450 435-9631",url:"https://www.golfstjanvier.com/tarifs/",lat:45.7248,lng:-73.8784},
- "Club de golf St-Jérôme":{tel:"450 436-2335",url:"https://golfstjerome.com/tarifs/",lat:45.8313,lng:-74.0617},
- "Club de golf Mirabel":{tel:"450 435-7006",url:"https://www.golfmirabel.com/",lat:45.7162,lng:-73.9015},
- "Club de golf Le Diamant":{tel:"450 476-1922",url:"https://www.golflediamant.com/index.php?lang=fr",lat:45.6537,lng:-73.9965},
- "Golf 4D":{tel:"450 434-0048",url:"https://www.golf4d.ca/r%C3%A9servation",lat:45.6744,lng:-73.9150},
- "Golf Le Sélect":{tel:"450 566-0370",url:"https://golfleselect.com/tarifs-promotions-2/",lat:45.6711,lng:-74.2305},
- "Club de golf Glendale":{tel:"514 990-8392",url:"https://www.golf-glendale.com/fr/page/tarifs_visiteurs.html",lat:45.6446,lng:-73.9476},
- "Golf Le Grand Duc":{tel:"450 569-1818",url:"https://www.golflegrandduc.com/tarifs/",lat:45.8377,lng:-73.8929},
- "Club de Golf Lorraine":{tel:"450 621-1740",url:"https://lorrainegolf.com/rates/",lat:45.6604,lng:-73.7809},
- "Centre de Golf Le Versant":{tel:"450 964-2251",url:"https://golfleversant.com/en/rates/",lat:45.6878,lng:-73.7065},
- "Golf Champêtre":{tel:"450 478-1112",url:"https://golfchampetre.com/tarifs-membre/",lat:45.7967,lng:-73.8562},
- "Club de golf Lachute":{tel:"450 562-5228",url:"https://www.cglachute.ca/",lat:45.6465,lng:-74.3280},
- "Golf Ste-Rose":{tel:"450 628-6072",url:"https://golfsterose.com/",lat:45.5969,lng:-73.8202},
- "Club de golf Piedmont":{tel:"450 227-4653",url:"https://golfpiedmont.ca/pages/tarification",lat:45.9114,lng:-74.1336},
- "Golf La Vallée de Sainte-Adèle":{tel:"450 229-4653",url:"https://www.golflavallee.com/reservez/",lat:45.9489,lng:-74.1190},
- "Golf Le Chantecler":{tel:"450 476-1339",url:"https://www.golflechantecler.com/le-club/tarifs-journaliers/",lat:45.9612,lng:-74.1681},
- "Club de Golf Val-Morin":{tel:"819 322-1501",url:"https://golfvalmorin.com/",lat:46.0000,lng:-74.1676},
- "Club de golf Mont-Gabriel":{tel:"450 229-3547",url:"https://www.montgabriel.com/Activites/golf",lat:45.9216,lng:-74.1611},
- "Golf Royal Laurentien":{tel:"819 326-5454",url:"https://golfroyallaurentien.com/tarifs/",lat:46.1175,lng:-74.4760},
- "Club de golf St-Donat":{tel:"819 424-2658",url:"https://golfstdonat.com/fr/tarifs/",lat:46.2972,lng:-74.2088},
- "Golf Arundel":{tel:"819 687-8383",url:"https://golfarundel.com/fr/reservation-2-2-2/",lat:45.9796,lng:-74.6210},
- "Golf Le Griffon des Sources":{tel:"450 562-2688",url:"https://www.golfgriffon.com/fr/tarifs",lat:45.6359,lng:-74.2432},
- "Club de Golf Tremblant":{tel:"866 783-5634",url:"https://www.tremblant.ca/fr-CA/quoi-faire/golf/reservations",lat:46.1796,lng:-74.5993},
- "Club de Golf Terrebonne":{tel:"450 477-1817",url:"https://www.golfterrebonne.ca/index.php?option=com_ggpublic&req=teetimes&lang=fr",lat:45.7355,lng:-73.7340}
-};
-// ----- nombre de trous + tarifs 9 trous (par club, vérifié sur sites officiels 5 juin 2026) -----
-// holes: format réel du parcours (badge). played2x: 9 trous joué deux fois pour 18.
-// g9: grille 9 trous {sem,ven,fds} en slots {s,l,w,c}. Absente = pas de 9 trous → grisé en mode 9t.
-// vf9:'dyn' = tarif 9 trous à confirmer (incomplet/dynamique).
-const CLUB9={
- "Club de golf Bel-Air":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:24.35,c:6.09}],ven:"sem",fds:[{s:0,l:"9 trous",w:26.09,c:6.09}]}},
- "Golf Sainte-Agathe":{holes:9,played2x:true,g9:{sem:[{s:0,l:"9t (8h–14h)",w:28.70,c:15.22},{s:14,l:"9t (après 14h)",w:20.00,c:15.22}],ven:"sem",fds:[{s:0,l:"9t (8h–14h)",w:31.31,c:15.22},{s:14,l:"9t (après 14h)",w:24.35,c:15.22}]}},
- "Club de golf St-Janvier":{holes:18},
- "Club de golf St-Jérôme":{holes:18,g9:{sem:[{s:16,l:"9t = 18t (après 16h)",w:35,c:19}],ven:"sem",fds:[{s:16,l:"9t = 18t (après 16h)",w:35,c:19}]}},
- "Club de golf Mirabel":{holes:18},
- "Club de golf Le Diamant":{holes:18},
- "Golf 4D":{holes:18},
- "Golf Le Sélect":{holes:18},
- "Club de golf Glendale":{holes:18,g9:{sem:[{s:0,l:"9 trous (Ancestral)",w:31.50,c:25.50}],ven:[{s:0,l:"9 trous (Ancestral)",w:35.50,c:25.50}],fds:[{s:0,l:"9 trous (Ancestral)",w:35.50,c:25.50}]}},
- "Golf Le Grand Duc":{holes:18,g9:{sem:[{s:15,l:"9t (après 15h)",w:22,c:22}],ven:"fds",fds:[{s:15,l:"9t (après 15h)",w:28,c:22}]}},
- "Club de Golf Lorraine":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:37,c:23}],ven:"sem",fds:[{s:0,l:"9 trous",w:46,c:23}]}},
- "Centre de Golf Le Versant":{holes:18,g9:{sem:[{s:0,l:"9t (Exécutif)",w:30,c:15}],ven:"fds",fds:[{s:0,l:"9t (Exécutif)",w:35,c:15}]}},
- "Golf Champêtre":{holes:18},
- "Club de golf Lachute":{holes:18},
- "Golf Ste-Rose":{holes:18},
- "Club de golf Piedmont":{holes:13},
- "Golf La Vallée de Sainte-Adèle":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:38,c:24}],ven:"sem",fds:[{s:0,l:"9 trous",w:39,c:24}]}},
- "Golf Le Chantecler":{holes:18},
- "Club de Golf Val-Morin":{holes:18,g9:{sem:[{s:0,l:"9 trous (lun–jeu)",w:45,c:13}],ven:[],fds:[]}},
- "Club de golf Mont-Gabriel":{holes:18},
- "Golf Royal Laurentien":{holes:18},
- "Club de golf St-Donat":{holes:18,g9:{sem:[{s:0,l:"9t (dynamique)",w:null,c:7}],ven:"sem",fds:[{s:0,l:"9t (dynamique)",w:null,c:7}]},vf9:"dyn"},
- "Golf Arundel":{holes:18},
- "Golf Le Griffon des Sources":{holes:18,g9:{sem:[{s:0,l:"9t (voit. incl.)",w:65,c:0},{s:16,l:"9t après 16h (voit. incl.)",w:50,c:0}],ven:"fds",fds:[{s:0,l:"9t après 14h (voit. incl.)",w:70,c:0},{s:16,l:"9t après 16h (voit. incl.)",w:50,c:0}]}},
- "Club de Golf Tremblant":{holes:18},
- "Club de Golf Terrebonne":{holes:27,g9:{sem:[{s:0,l:"9t (jour)",w:64,c:18},{s:12.5,l:"9t (12h30–15h)",w:60,c:18},{s:15,l:"9t (après 15h)",w:45,c:18}],ven:[{s:0,l:"9t (jour)",w:68,c:18},{s:12.5,l:"9t (12h30–15h)",w:64,c:18},{s:15,l:"9t (après 15h)",w:50,c:18}],fds:[{s:0,l:"9t (jour)",w:76,c:18},{s:12.5,l:"9t (12h30–15h)",w:64,c:18},{s:15,l:"9t (après 15h)",w:50,c:18}]},nine_note:"9 et 18 au même tarif marcheur (seule la voiturette diffère)."}
-};
+// Les données vivent dans golfs.json (chargé au démarrage par bootstrap() tout en bas).
+// CLUBS / CLUB_META / CLUB9 sont remplis après le fetch. Pour éditer un terrain : modifier golfs.json.
+let CLUBS = [];
+let CLUB_META = {};
+let CLUB9 = {};
 // ----- region + cart policy + verification -----
 const REGION_BY_TOWN={
  "Mirabel":"Basses-Laurentides","St-Jérôme":"Basses-Laurentides","Sainte-Sophie":"Basses-Laurentides",
@@ -618,26 +366,29 @@ const REGION_BY_TOWN={
  "Sainte-Agathe":"Hautes-Laurentides","Mont-Blanc":"Hautes-Laurentides","St-Donat":"Hautes-Laurentides",
  "Arundel":"Hautes-Laurentides","Mont-Tremblant":"Hautes-Laurentides"
 };
-CLUBS.forEach(c=>{
-  c.region = REGION_BY_TOWN[c.t] || "Autres";
-  c.base = c.n.split(' — ')[0];
-  if(/Mont-Gabriel|Tremblant/.test(c.n)) c.cartPol="oblig";
-  else if(c.cartIncl) c.cartPol="incl";
-  else c.cartPol="pied";
-  c.vf = c.vf || (c.dataNd?'nd':(c.dynamic?'dyn':'ok'));
-  const meta = CLUB_META[c.base] || {};
-  c.tel = meta.tel || "";
-  c.url = meta.url || "";
-  c.lat = (meta.lat ?? null);
-  c.lng = (meta.lng ?? null);
-  c.geoApprox = !!meta.geoApprox;
-  const m9 = CLUB9[c.base] || {};
-  c.holes = m9.holes ?? 18;
-  c.played2x = !!m9.played2x;
-  c.g9 = m9.g9 || null;
-  c.vf9 = m9.vf9 || (m9.g9 ? 'ok' : null);
-  c.nine_note = m9.nine_note || "";
-});
+// enrichit chaque club avec les champs calculés + fusionne CLUB_META / CLUB9 (appelé après le chargement de golfs.json)
+function enrichClubs(){
+  CLUBS.forEach(c=>{
+    c.region = REGION_BY_TOWN[c.t] || "Autres";
+    c.base = c.n.split(' — ')[0];
+    if(/Mont-Gabriel|Tremblant/.test(c.n)) c.cartPol="oblig";
+    else if(c.cartIncl) c.cartPol="incl";
+    else c.cartPol="pied";
+    c.vf = c.vf || (c.dataNd?'nd':(c.dynamic?'dyn':'ok'));
+    const meta = CLUB_META[c.base] || {};
+    c.tel = meta.tel || "";
+    c.url = meta.url || "";
+    c.lat = (meta.lat ?? null);
+    c.lng = (meta.lng ?? null);
+    c.geoApprox = !!meta.geoApprox;
+    const m9 = CLUB9[c.base] || {};
+    c.holes = m9.holes ?? 18;
+    c.played2x = !!m9.played2x;
+    c.g9 = m9.g9 || null;
+    c.vf9 = m9.vf9 || (m9.g9 ? 'ok' : null);
+    c.nine_note = m9.nine_note || "";
+  });
+}
 // ----- helpers -----
 function vfPill(c){
   if(c.vf==='nd') return `<span class="vf vf-nd" title="Tarifs non publiés en ligne">n.d.</span>`;
@@ -1018,10 +769,13 @@ function syncSeg(id,val){
 // init date inputs to today
 document.getElementById('selDate').value=TODAY;
 document.getElementById('selDateS').value=TODAY;
-// peuple le dropdown de clubs (onglet Club de golf)
-const BASES=[...new Set(CLUBS.map(c=>c.base))].sort((a,b)=>a.localeCompare(b,'fr'));
-document.getElementById('selClubI').innerHTML=BASES.map(b=>`<option value="${b}">${b}</option>`).join('');
-STI.club=BASES[0];
+// peuple le dropdown de clubs (onglet Club de golf) — rempli après chargement des données
+let BASES=[];
+function populateClubSelect(){
+  BASES=[...new Set(CLUBS.map(c=>c.base))].sort((a,b)=>a.localeCompare(b,'fr'));
+  document.getElementById('selClubI').innerHTML=BASES.map(b=>`<option value="${b}">${b}</option>`).join('');
+  STI.club=BASES[0];
+}
 seg('segSort','sort','sort',ST,renderComp);
 // pousse la date/heure partagées dans les inputs des deux onglets
 function syncDateTimeInputs(){
@@ -1069,7 +823,26 @@ function openClubInfo(base){
   goToTab('info');
   window.scrollTo({top:0,behavior:'smooth'});
 }
-renderComp();
+// ====== bootstrap : charge golfs.json puis démarre l'app ======
+async function bootstrap(){
+  try{
+    const res=await fetch('golfs.json',{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    CLUBS=data.clubs||[];
+    CLUB_META=data.club_meta||{};
+    CLUB9=data.club9||{};
+  }catch(e){
+    document.getElementById('tbody').innerHTML=
+      `<tr><td colspan="6" style="padding:24px;color:#e9967f">Impossible de charger les données (golfs.json). `+
+      `Ouvre l'app via un serveur (pas en double-cliquant le fichier). Détail : ${e.message}</td></tr>`;
+    return;
+  }
+  enrichClubs();
+  populateClubSelect();
+  renderComp();
+}
+bootstrap();
 </script>
 </body>
 </html>

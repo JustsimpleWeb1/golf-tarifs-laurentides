@@ -347,7 +347,7 @@
     <div class="legend"><span>📍 Un point par club · clique un marqueur pour le tarif et le lien de réservation. Quelques positions sont approximatives (centre du secteur).</span></div>
   </section>
   <footer>
-    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous ; tarifs 9 trous marqués ~ sont à confirmer. Construit pour Simon · Just Simple Web. <b>v14 · 5 juin 2026</b></div>
+    <div>Prix tels qu'affichés sur le site de chaque club (saison 2026), vérifiés le <b>5 juin 2026</b> — sujets à changement sans préavis. Le jour (semaine, vendredi, fin de semaine, fériés) et la saison se déduisent automatiquement de la date choisie. Certains clubs affichent taxes incluses, d'autres non : voir la note de chaque fiche. Tarifs dynamiques (Tremblant, St-Donat) signalés par badge. Liens de réservation et carte ajoutés le 5 juin 2026 (quelques positions approximatives). Filtre 9/18 trous : tous les clubs n'offrent pas de 9 trous ; tarifs 9 trous marqués ~ sont à confirmer. Construit pour Simon · Just Simple Web. <b>v15 · 5 juin 2026</b></div>
   </footer>
 </div>
 <script>
@@ -569,13 +569,13 @@ const CLUB_META={
  "Golf La Vallée de Sainte-Adèle":{tel:"450 229-4653",url:"https://www.golflavallee.com/reservez/",lat:45.9489,lng:-74.1190},
  "Golf Le Chantecler":{tel:"450 476-1339",url:"https://www.golflechantecler.com/le-club/tarifs-journaliers/",lat:45.9612,lng:-74.1681},
  "Club de Golf Val-Morin":{tel:"819 322-1501",url:"https://golfvalmorin.com/",lat:46.0000,lng:-74.1676},
- "Club de golf Mont-Gabriel":{tel:"450 229-3547",url:"https://www.montgabriel.com/Activites/golf",lat:45.9191,lng:-74.1593,geoApprox:true},
+ "Club de golf Mont-Gabriel":{tel:"450 229-3547",url:"https://www.montgabriel.com/Activites/golf",lat:45.9216,lng:-74.1611},
  "Golf Royal Laurentien":{tel:"819 326-5454",url:"https://golfroyallaurentien.com/tarifs/",lat:46.1175,lng:-74.4760},
- "Club de golf St-Donat":{tel:"819 424-2658",url:"https://golfstdonat.com/fr/tarifs/",lat:46.3170,lng:-74.2240,geoApprox:true},
+ "Club de golf St-Donat":{tel:"819 424-2658",url:"https://golfstdonat.com/fr/tarifs/",lat:46.2972,lng:-74.2088},
  "Golf Arundel":{tel:"819 687-8383",url:"https://golfarundel.com/fr/reservation-2-2-2/",lat:45.9620,lng:-74.6100,geoApprox:true},
- "Golf Le Griffon des Sources":{tel:"450 562-2688",url:"https://www.golfgriffon.com/fr/tarifs",lat:45.7260,lng:-74.1100,geoApprox:true},
+ "Golf Le Griffon des Sources":{tel:"450 562-2688",url:"https://www.golfgriffon.com/fr/tarifs",lat:45.6359,lng:-74.2432},
  "Club de Golf Tremblant":{tel:"866 783-5634",url:"https://www.tremblant.ca/fr-CA/quoi-faire/golf/reservations",lat:46.1970,lng:-74.5950,geoApprox:true},
- "Club de Golf Terrebonne":{tel:"450 477-1817",url:"https://www.golfterrebonne.ca/index.php?option=com_ggpublic&req=teetimes&lang=fr",lat:45.7380,lng:-73.7000,geoApprox:true}
+ "Club de Golf Terrebonne":{tel:"450 477-1817",url:"https://www.golfterrebonne.ca/index.php?option=com_ggpublic&req=teetimes&lang=fr",lat:45.7355,lng:-73.7340}
 };
 // ----- nombre de trous + tarifs 9 trous (par club, vérifié sur sites officiels 5 juin 2026) -----
 // holes: format réel du parcours (badge). played2x: 9 trous joué deux fois pour 18.
@@ -585,27 +585,27 @@ const CLUB9={
  "Club de golf Bel-Air":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:24.35,c:6.09}],ven:"sem",fds:[{s:0,l:"9 trous",w:26.09,c:6.09}]}},
  "Golf Sainte-Agathe":{holes:9,played2x:true,g9:{sem:[{s:0,l:"9t (8h–14h)",w:28.70,c:15.22},{s:14,l:"9t (après 14h)",w:20.00,c:15.22}],ven:"sem",fds:[{s:0,l:"9t (8h–14h)",w:31.31,c:15.22},{s:14,l:"9t (après 14h)",w:24.35,c:15.22}]}},
  "Club de golf St-Janvier":{holes:18},
- "Club de golf St-Jérôme":{holes:18,g9:{sem:[{s:16,l:"9t (après 16h)",w:35,c:19}],ven:"sem",fds:[{s:16,l:"9t (après 16h)",w:35,c:19}]},vf9:"dyn"},
+ "Club de golf St-Jérôme":{holes:18,g9:{sem:[{s:16,l:"9t = 18t (après 16h)",w:35,c:19}],ven:"sem",fds:[{s:16,l:"9t = 18t (après 16h)",w:35,c:19}]}},
  "Club de golf Mirabel":{holes:18},
  "Club de golf Le Diamant":{holes:18},
  "Golf 4D":{holes:18},
  "Golf Le Sélect":{holes:18},
- "Club de golf Glendale":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:31.50,c:25.50}],ven:[{s:0,l:"9 trous",w:35.50,c:25.50}],fds:[{s:0,l:"9 trous",w:35.50,c:25.50}]},vf9:"dyn"},
+ "Club de golf Glendale":{holes:18,g9:{sem:[{s:0,l:"9 trous (Ancestral)",w:31.50,c:25.50}],ven:[{s:0,l:"9 trous (Ancestral)",w:35.50,c:25.50}],fds:[{s:0,l:"9 trous (Ancestral)",w:35.50,c:25.50}]}},
  "Golf Le Grand Duc":{holes:18,g9:{sem:[{s:15,l:"9t (après 15h)",w:22,c:22}],ven:"fds",fds:[{s:15,l:"9t (après 15h)",w:28,c:22}]}},
  "Club de Golf Lorraine":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:37,c:23}],ven:"sem",fds:[{s:0,l:"9 trous",w:46,c:23}]}},
  "Centre de Golf Le Versant":{holes:18,g9:{sem:[{s:0,l:"9t (Exécutif)",w:30,c:15}],ven:"fds",fds:[{s:0,l:"9t (Exécutif)",w:35,c:15}]}},
  "Golf Champêtre":{holes:18},
- "Club de golf Lachute":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:null,c:14.99}],ven:"sem",fds:[{s:0,l:"9 trous",w:null,c:14.99}]},vf9:"dyn"},
+ "Club de golf Lachute":{holes:18},
  "Golf Ste-Rose":{holes:18},
  "Club de golf Piedmont":{holes:13},
  "Golf La Vallée de Sainte-Adèle":{holes:18,g9:{sem:[{s:0,l:"9 trous",w:38,c:24}],ven:"sem",fds:[{s:0,l:"9 trous",w:39,c:24}]}},
  "Golf Le Chantecler":{holes:18},
- "Club de Golf Val-Morin":{holes:18,g9:{sem:[{s:15,l:"9t (après 15h, sem.)",w:45,c:13}],ven:"sem",fds:[{s:15,l:"9t (après 15h)",w:45,c:13}]},vf9:"dyn"},
+ "Club de Golf Val-Morin":{holes:18,g9:{sem:[{s:0,l:"9 trous (lun–jeu)",w:45,c:13}],ven:[],fds:[]}},
  "Club de golf Mont-Gabriel":{holes:18},
  "Golf Royal Laurentien":{holes:18},
  "Club de golf St-Donat":{holes:18,g9:{sem:[{s:0,l:"9t (dynamique)",w:null,c:7}],ven:"sem",fds:[{s:0,l:"9t (dynamique)",w:null,c:7}]},vf9:"dyn"},
  "Golf Arundel":{holes:18},
- "Golf Le Griffon des Sources":{holes:18,g9:{sem:[{s:0,l:"9t (voit. incl.)",w:65,c:0}],ven:"fds",fds:[{s:0,l:"9t (voit. incl.)",w:70,c:0}]},vf9:"dyn"},
+ "Golf Le Griffon des Sources":{holes:18,g9:{sem:[{s:0,l:"9t (voit. incl.)",w:65,c:0},{s:16,l:"9t après 16h (voit. incl.)",w:50,c:0}],ven:"fds",fds:[{s:0,l:"9t après 14h (voit. incl.)",w:70,c:0},{s:16,l:"9t après 16h (voit. incl.)",w:50,c:0}]}},
  "Club de Golf Tremblant":{holes:18},
  "Club de Golf Terrebonne":{holes:27,g9:{sem:[{s:0,l:"9t (jour)",w:64,c:18},{s:12.5,l:"9t (12h30–15h)",w:60,c:18},{s:15,l:"9t (après 15h)",w:45,c:18}],ven:[{s:0,l:"9t (jour)",w:68,c:18},{s:12.5,l:"9t (12h30–15h)",w:64,c:18},{s:15,l:"9t (après 15h)",w:50,c:18}],fds:[{s:0,l:"9t (jour)",w:76,c:18},{s:12.5,l:"9t (12h30–15h)",w:64,c:18},{s:15,l:"9t (après 15h)",w:50,c:18}]},nine_note:"9 et 18 au même tarif marcheur (seule la voiturette diffère)."}
 };
@@ -758,6 +758,7 @@ function renderComp(){
     if(nine && !c.g9){ rows.push({c,no9:true}); continue; }
     const g=gridFor(c,ST.date);
     const slot=nine?slot9For(c,day,ST.time):slotFor(c,day,ST.time,ST.date);
+    if(nine && !slot){ rows.push({c,no9:true}); continue; } // g9 existe mais rien pour ce jour (ex: 9t lun-jeu seulement)
     const w=priceWalk(c,slot,tIncl);
     const ct=priceCart(c,slot,tIncl);
     rows.push({c,g,slot,w,ct,nine});
